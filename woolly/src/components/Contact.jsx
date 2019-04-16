@@ -9,7 +9,7 @@ class ContactSpan extends React.Component{
         
         return(
             <div className={classes.contact}>
-                <span>Made with ♥ by SiMDE. <a className={classes.mailto} href="mailto:simde@assos.utc.fr">Contact</a></span>
+                Made with ♥ by SiMDE. <a className={classes.mailto} href="mailto:simde@assos.utc.fr">Contact</a>
             </div>
         )
     }
@@ -21,11 +21,12 @@ ContactSpan.propTypes = {
 
 const styles = theme => ({
     contact: {
-        position: "absolute",
+        position: 'fixed',
         bottom: 0,
-        left: "50%",
-        transform: "translateX(-50%)",
-        padding: "10px 0",
+        left: 0,
+        width: '100%',
+        textAlign: 'center',
+        padding: 10,
         fontFamily: "Roboto",
         opacity: 0.7
     },
