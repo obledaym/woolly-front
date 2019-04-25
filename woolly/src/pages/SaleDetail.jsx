@@ -1,37 +1,23 @@
 import React from 'react'
 import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
+import actions from '../redux/actions';
+
+import Loader from '../components/Loader';
+import ItemsTable from '../components/common/ItemsTable';
 import { withStyles } from '@material-ui/core/styles';
-import { Table, TableBody, TableRow, TableCell,
-				 Button, TextField, Paper } from '@material-ui/core/';
+import { Button, Paper } from '@material-ui/core/';
 import { ShoppingCart, Delete } from '@material-ui/icons';
 
 
-// import { FontAwesomeIcon } from '@fontawesome/react-fontawesome';
-// import { faShoppingCart, faTrashAlt } from '@fontawesome/free-solid-svg-icons';
-
-const FontAwesomeIcon = (...args) => null
-const faShoppingCart = (...args) => null
-const faTrashAlt = (...args) => null
-
-
-
-// L'objet JSX ci-dessous ne sert qu'à la simulation de données qu'on aurait récupérées depuis la DB
-// TODO : à supprimer après connection avec la BDD ainsi qu'après avoir changer les lignes utilisant l'objet
-const CURRENT_SALE_DATA = {
-	titre: "Courses de Baignoires dans l'Oise",
-	association: {
-		name: "Baignoires dans l'Oise",
-	},
-	description: "Les baignoires dans l’Oise, c’est pas n’importe quelle course ! Rien que pour vous régaler, le BDE organise un événement frappant cette année : une descente d’un kilomètre le long de notre magnifique et somptueuse rivière.",
-	dates: ["Ouverture : 17/08/2018","Fermeture : 29/09/2018"],
-	quantites: 100,
-	items: [
-		{ id: 1530, title: "Cotisation", price: 1},
-		{ id: 1531, title: "P'tit jaune à Marseille", price: 2},
-		{ id: 1532, title: "Limonade", price: 0.85}
-	]
-}
-
+const decorator = connect((store, props) => {
+	const route = ['sales', props.match.params.sale_id];
+	return {
+		sale: store.getData(route, null),
+		fetchingSale: store.isFetching(route),
+		fetchingItems: store.isFetching([ ...route, 'items' ]),
+	};
+})
 class SaleDetail extends React.Component{
 	constructor(props){
 		super(props);
@@ -41,64 +27,46 @@ class SaleDetail extends React.Component{
 	}
 
 	componentDidMount() {
-		// 
+		const sale = this.props.sale;
+		const saleId = Number(this.props.match.params.sale_id);
+		// TODO Not working
+		if (false && sale) {
+			// If items are pk, fetch them
+			const itemsArePk = !sale.items || sale.items.length > 0 && typeof sale.items[0] !== "object";
+			if (itemsArePk) {
+				console.log('in')
+				this.props.dispatch(actions.sales(saleId).items.get())
+			}
+		} else {
+			// If no sale, fetch it
+			this.props.dispatch(actions.sales.find(saleId, { include: 'association,items' }))
+		}
 	}
 
-	handleChange = event => {
+	handleQuantityChange = event => {
 		const { id: key, value } = event.currentTarget;
 		this.setState(prevState => ({
 			quantities: {
 				...prevState.quantities,
-				[key]: value,
+				[key]: Number(value),
 			},
 		}));
 	}
 
 	handleReset = () => this.setState({ quantities: {} })
 
-	renderItemsTable = () => {
-		const { classes } = this.props;
-		const sale = CURRENT_SALE_DATA
-		// Utilisation de CURRENT_SALE_DATA à supprimer plus tard
-
-		return (
-			<Table>
-				<TableBody>
-					{sale.items.map(item => (
-						<TableRow key={item.id} className={classes.trow}>
-							<TableCell className={classes.text}>{item.title}</TableCell>
-							<TableCell className={classes.text}>{item.price.toFixed(2)} €</TableCell>
-							<TableCell>
-								<TextField
-									id={String(item.id)}
-									value={this.state.quantities[item.id] || 0}
-									onChange={this.handleChange}
-									type="number"
-									inputProps={{ min: 0, max: item.max_per_user }}
-									classes={{ root: classes.text }}
-									style={{ width: '3em' }}
-									InputLabelProps={{ shrink: true }}
-									margin="normal"
-								/>
-							</TableCell>
-						</TableRow>
-					))}
-				</TableBody>
-			</Table>
-		)
-	}
-
-
 	render(){
-		const { classes } = this.props;
+		const { classes, sale } = this.props;
 		const isConnected = true;
 
-		const sale = CURRENT_SALE_DATA;
+		if (!sale || this.props.fetchingSale)
+			return <Loader text="Loading sale..." />
 
+		const itemsArePk = !sale.items || sale.items.length > 0 && typeof sale.items[0] !== "object";
 		return(
 			<div className="container" style={{paddingTop: "60px"}}>
 
-				<h1 className={classes.title}>{sale.titre}</h1>
+				<h1 className={classes.title}>{sale.name}</h1>
 				<h2 className={classes.subtitle}>Organisé par {sale.association.name}</h2>
 
 				<div className={classes.details}>
@@ -109,14 +77,15 @@ class SaleDetail extends React.Component{
 					<div className={classes.numbersContainer}>
 						<div className={classes.numbers}>
 							<h4 className={classes.detailsTitles}>Dates</h4>
-							{sale.dates.map((date, key) => (
-								<span key={key} className={classes.date}>{date}</span>
-							))}
+							<span className={classes.date}>Ouverture: {sale.begin_at}</span>
+							<span className={classes.date}>Fermeture: {sale.end_at}</span>
 						</div>
-						<div className={classes.numbers}>
-							<h4 className={classes.detailsTitles}>Quantités</h4>
-							<p style={{fontSize: "1.6em"}}>{sale.quantites}</p>
-						</div>
+						{ sale.max_item_quantity !== null && (
+							<div className={classes.numbers}>
+								<h4 className={classes.detailsTitles}>Quantités </h4>
+								<p style={{fontSize: "1.6em"}}>{sale.max_item_quantity}</p>
+							</div>
+						)}
 					</div>
 				</div>
 
@@ -144,7 +113,13 @@ class SaleDetail extends React.Component{
 
 				{!isConnected && <p className={classes.alert}>Veuillez vous connecter pour acheter.</p>}
 				<Paper className={classes.tableRoot}>
-				{this.renderItemsTable()}
+					<Loader text="Loading items..." loading={this.props.fetchingItems || itemsArePk}>
+						<ItemsTable
+							items={sale.items}
+							quantities={this.state.quantities}
+							handleQuantityChange={this.handleQuantityChange}
+						/>				
+					</Loader>
 				</Paper>
 			</div>
 		)
@@ -156,19 +131,6 @@ SaleDetail.propTypes = {
 };
 
 const styles = theme => ({
-	trow: {
-		height: 80,
-		transition: "box-shadow .45s ease",
-		'&:hover': {
-			boxShadow: "0 8px 17px 0 rgba(0,0,0,.2), 0 6px 20px 0 rgba(0,0,0,.19)"
-		}
-	},
-	tcell: {
-		borderTop: "1px solid rgba(0,0,0,.2)",
-		fontFamily: "roboto",
-		fontWeight: 100,
-		padding: "0.8em 2em"
-	},
 	title: {
 		fontFamily: 'roboto',
 		fontWeight: 100,
@@ -261,4 +223,4 @@ const styles = theme => ({
 	}
 });
 
-export default withStyles(styles)(SaleDetail)
+export default decorator(withStyles(styles)(SaleDetail));
