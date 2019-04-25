@@ -21,12 +21,14 @@ class Loader extends React.Component {
 
 Loader.propTypes = {
 	classes: PropTypes.object.isRequired,
+	loading: PropTypes.bool,
 	text: PropTypes.string,
 	size: PropTypes.oneOf(['sm', 'md', 'lg', 'xl']),
 	direction: PropTypes.string,
 }
 
 Loader.defaultProps = {
+	loading: true,
 	size: 'md',
 	direction: 'right',
 }
