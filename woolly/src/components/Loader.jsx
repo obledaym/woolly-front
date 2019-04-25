@@ -12,7 +12,7 @@ class Loader extends React.Component {
 		const { classes, text, size, direction } = this.props;
 		return (
 			<div className={[classes.container, classes[size], classes[direction] ].join(' ')}>
-				<CircularProgress className="spinner" />
+				<CircularProgress className={classes.spinner} />
 				{text && <span className="text">{text}</span>}
 			</div>
 		)
@@ -39,6 +39,9 @@ const styles = {
 		display: 'flex',
 		alignItems: 'center',
 		justifyContent: 'center',
+	},
+	spinner: {
+		margin: '0.5em',
 	},
 	// sm: {
 	// 	'& .spinner':

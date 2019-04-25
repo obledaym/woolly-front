@@ -11,15 +11,14 @@ import { ShoppingCart, Delete } from '@material-ui/icons';
 
 
 const decorator = connect((store, props) => {
-	const route = ['sales', props.match.params.sale_id];
+	const saleId = props.match.params.sale_id;
 	return {
-		sale: store.getData(route, null),
-		fetchingSale: store.isFetching(route),
-		fetchingItems: store.isFetching([ ...route, 'items' ]),
+		sale: store.getData(['sales', saleId], null),
+		items: store.getData(['sales', saleId, 'items' ], null),
 	};
 })
 class SaleDetail extends React.Component{
-	constructor(props){
+	constructor(props) {
 		super(props);
 		this.state = {
 			quantities: {},
@@ -27,20 +26,11 @@ class SaleDetail extends React.Component{
 	}
 
 	componentDidMount() {
-		const sale = this.props.sale;
 		const saleId = Number(this.props.match.params.sale_id);
-		// TODO Not working
-		if (false && sale) {
-			// If items are pk, fetch them
-			const itemsArePk = !sale.items || sale.items.length > 0 && typeof sale.items[0] !== "object";
-			if (itemsArePk) {
-				console.log('in')
+		if (!this.props.sale)
+			this.props.dispatch(actions.sales.find(saleId, { include: 'association' }))
+		if (!this.props.items)
 				this.props.dispatch(actions.sales(saleId).items.get())
-			}
-		} else {
-			// If no sale, fetch it
-			this.props.dispatch(actions.sales.find(saleId, { include: 'association,items' }))
-		}
 	}
 
 	handleQuantityChange = event => {
@@ -62,7 +52,6 @@ class SaleDetail extends React.Component{
 		if (!sale || this.props.fetchingSale)
 			return <Loader text="Loading sale..." />
 
-		const itemsArePk = !sale.items || sale.items.length > 0 && typeof sale.items[0] !== "object";
 		return(
 			<div className="container" style={{paddingTop: "60px"}}>
 
@@ -113,9 +102,9 @@ class SaleDetail extends React.Component{
 
 				{!isConnected && <p className={classes.alert}>Veuillez vous connecter pour acheter.</p>}
 				<Paper className={classes.tableRoot}>
-					<Loader text="Loading items..." loading={this.props.fetchingItems || itemsArePk}>
+					<Loader text="Loading items..." loading={this.props.items === null}>
 						<ItemsTable
-							items={sale.items}
+							items={this.props.items}
 							quantities={this.state.quantities}
 							handleQuantityChange={this.handleQuantityChange}
 						/>				

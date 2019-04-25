@@ -12,19 +12,16 @@ class ItemsTable extends React.Component {
  			return <Loader text="Loading items..." />
 
  		if (items.length === 0)
- 			return (
- 				<p className={classes.message}>Il n'y a aucun item en vente !</p>
- 			);
+ 			return <p className={classes.message}>Il n'y a aucun item en vente !</p>
 
- 		console.log(items)
  		// TODO Group items
 		return (
 			<Table>
 				<TableBody>
 					{items.map(item => (
-						<TableRow key={item.id} className={classes.trow}>
-							<TableCell className={classes.text}>{item.name}</TableCell>
-							<TableCell className={classes.text}>{item.price.toFixed(2)} €</TableCell>
+						<TableRow key={item.id} className={classes.row}>
+							<TableCell className={classes.cell}>{item.name}</TableCell>
+							<TableCell className={classes.cell}>{item.price.toFixed(2)} €</TableCell>
 							{quantities && (
 								<TableCell>
 									<TextField
@@ -33,8 +30,7 @@ class ItemsTable extends React.Component {
 										onChange={this.props.handleQuantityChange}
 										type="number"
 										inputProps={{ min: 0, max: item.max_per_user }}
-										classes={{ root: classes.text }}
-										// style={{ width: '3em' }}
+										classes={{ root: classes.cell }}
 										InputLabelProps={{ shrink: true }}
 										margin="normal"
 									/>
@@ -59,23 +55,17 @@ const styles = {
 	message: {
 		textAlign: 'center',
 	},
-	text: {
-		margin: 0,
-		fontSize: 18,
-		fontWeight: 100,
-	},
-	trow: {
+	row: {
 		height: 80,
 		transition: "box-shadow .45s ease",
 		'&:hover': {
 			boxShadow: "0 8px 17px 0 rgba(0,0,0,.2), 0 6px 20px 0 rgba(0,0,0,.19)"
 		}
 	},
-	tcell: {
-		borderTop: "1px solid rgba(0,0,0,.2)",
-		fontFamily: "roboto",
+	cell: {
+		margin: 0,
+		fontSize: 18,
 		fontWeight: 100,
-		padding: "0.8em 2em"
 	},
 };
 
