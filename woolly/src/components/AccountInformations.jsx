@@ -64,7 +64,8 @@ const styles = theme => ({
     },
     label: {
         fontWeight: "500",
-        fontSize: "1em"
+        fontSize: "1em",
+        paddingRight: "1em"
     },
     value: {
         fontWeight: "200"

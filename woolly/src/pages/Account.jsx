@@ -39,11 +39,17 @@ const styles = theme => ({
         }
     },
     root: {
-        margin: "0 20px",
+        marginLeft: "5%",
+        marginRight: "0",
+        [theme.breakpoints.down('md')]:{
+            marginRight: "2%",
+            marginLeft: "2%"
+        }
     },
     inner: {
         display: "flex",
-        flexDirection: "row"
+        flexDirection: "row",
+        flexWrap: "wrap"
     }
 })
 

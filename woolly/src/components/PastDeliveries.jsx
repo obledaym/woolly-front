@@ -64,18 +64,20 @@ class PastDeliveries extends React.Component{
         return(
             <div className={classes.root}>
                 <h2 className={classes.title}>Mes commandes</h2>
-                <Table>
-                    <TableBody>
-                        <TableRow>
-                            <TableCell className={classes.head}>ID</TableCell>
-                            <TableCell className={classes.head}>Vente</TableCell>
-                            <TableCell className={classes.head}>Statut</TableCell>
-                            <TableCell className={classes.head}>Action</TableCell>
-                            <TableCell className={classes.head}>Article</TableCell>
-                        </TableRow>
-                        {renderDeliveriesRows}
-                    </TableBody>
-                </Table>
+                <div style={{overflowX: "auto"}}>
+                    <Table>
+                        <TableBody>
+                            <TableRow style={{paddingLeft: "1em"}}>
+                                <TableCell className={classes.head}>ID</TableCell>
+                                <TableCell className={classes.head}>Vente</TableCell>
+                                <TableCell className={classes.head}>Statut</TableCell>
+                                <TableCell className={classes.head}>Action</TableCell>
+                                <TableCell className={classes.head}>Article</TableCell>
+                            </TableRow>
+                            {renderDeliveriesRows}
+                        </TableBody>
+                    </Table>
+                </div>
             </div>
         )
     }
@@ -87,7 +89,8 @@ PastDeliveries.propTypes = {
 
 const styles = theme => ({
     root: {
-        marginLeft: "10px"
+        marginLeft: "10px",
+        overflow: "hidden"
     },
     title: {
         fontSize: theme.spacing.unit*4,

@@ -67,7 +67,7 @@ class DeliveryRow extends React.Component{
         
         return(
             <TableRow>
-                <TableCell>{this.props.id}</TableCell>
+                <TableCell align="center">{this.props.id}</TableCell>
                 <TableCell>{this.props.data.label}</TableCell>
                 <TableCell>{statusObject.label}</TableCell>
                 <TableCell>{statusObject.action}</TableCell>

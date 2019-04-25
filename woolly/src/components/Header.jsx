@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import { MoreVert } from '@material-ui/icons';
 import { AppBar, Toolbar, Button, Menu, MenuItem, Divider } from '@material-ui/core';
+import { Link } from 'react-router-dom'
 import NavButton from './common/NavButton.jsx';
 
 class Header extends React.Component {
@@ -39,7 +40,7 @@ class Header extends React.Component {
 									onClose={this.closeMenu}
 								>
 									<MenuItem>Mes commandes</MenuItem>
-									<MenuItem>Mon compte</MenuItem>
+									<MenuItem><Link to="/mon_compte" style={{color: "inherit", textDecoration: "none"}}>Mon Compte</Link></MenuItem>
 									{isAdmin && (
 										<MenuItem>Administration</MenuItem>
 									)}
