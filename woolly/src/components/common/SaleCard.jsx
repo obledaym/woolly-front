@@ -4,7 +4,7 @@ import { shorten } from '../../utils';
 
 import { withStyles } from '@material-ui/core/styles';
 import { Card, CardContent, CardActions } from '@material-ui/core';
-import NavButton from './NavButton.jsx';
+import { NavButton } from './Nav.jsx';
 
 
 class SaleCard extends React.Component {

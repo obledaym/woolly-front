@@ -198,7 +198,8 @@ export class Actions {
 			},
 			payload: axios[actionData.method](
 				this.generateUri(this.rootUri + this.uri, queryParams),
-				jsonData
+				jsonData,
+				{ withCredentials: true }
 			),
 		};
 	}

@@ -1,38 +1,51 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import axios from 'axios';
 
 import { withStyles } from '@material-ui/core/styles';
 import { MoreVert } from '@material-ui/icons';
-import { AppBar, Toolbar, Button, Menu, MenuItem, Divider } from '@material-ui/core';
-import NavButton from './common/NavButton.jsx';
 import { NavLink } from 'react-router-dom';
+import { AppBar, Toolbar, Button, Menu, MenuItem, Divider } from '@material-ui/core';
+import { NavButton, NavMenuItem } from './common/Nav.jsx';
+
 
 class Header extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
+			user: null,
 			expandMenu: false,
 			dropdownTarget: null,
 		};
 	}
 
-	openDropdown = (event) =>{
-		this.setState({ dropdownTarget: event.currentTarget })
-		document.addEventListener('mouseup', this.closeDropdown)
+	componentDidMount() {
+		this.getUser();
 	}
 
-	closeDropdown = () => {
-		document.removeEventListener('mouseup',this.closeDropdown)
-		if(this.state.dropdownTarget){
-			this.setState({ dropdownTarget: null })
-		}
+	getURL = action => `${axios.defaults.baseURL}/auth/${action}?redirect=${window.location}`
+
+	getUser = async () => {
+		// TODO Add to store
+		const resp = await axios.get('auth/me', { withCredentials: true });
+		this.setState({ user: resp.data.authenticated ? resp.data.user : null })
+	}
+
+	openDropdown = event =>{
+		this.setState({ dropdownTarget: event.currentTarget });
+		document.addEventListener('mouseup', this.closeDropdown);
+	}
+
+	closeDropdown = event => {
+		document.removeEventListener('mouseup',this.closeDropdown);
+		if (this.state.dropdownTarget)
+			this.setState({ dropdownTarget: null });
 	}
 
 	render() {
 		const { classes } = this.props;
-		const isConnected = !false;
-		const isAdmin = !false;
-		
+		const { user } = this.state;
+
 		return (
 			<AppBar position="fixed" style={{ height: this.props.height }}>
 				<Toolbar className={classes.toolbar + ' container'}>
@@ -40,25 +53,25 @@ class Header extends React.Component {
 					<div>
 						<NavButton to="/">Accueil</NavButton>
 						<NavButton to="/ventes">Ventes</NavButton>
-						{isConnected ? (
+						{Boolean(user) ? (
 							<React.Fragment>
-								<Button color="inherit" onClick={this.openDropdown}>Alexandre <MoreVert /></Button>
+								<Button color="inherit" onClick={this.openDropdown}>{user.first_name} <MoreVert /></Button>
 								<Menu
 									anchorEl={this.state.dropdownTarget}
 									open={Boolean(this.state.dropdownTarget)}
 									onClose={this.closeMenu}
 								>
-									<MenuItem>Mes commandes</MenuItem>
-									<MenuItem>Mon compte</MenuItem>
-									{isAdmin && (
-										<MenuItem>Administration</MenuItem>
+									<NavMenuItem to="/commandes">Mes commandes</NavMenuItem>
+									<NavMenuItem to="/compte">Mon compte</NavMenuItem>
+									{user.is_admin && (
+										<NavMenuItem to="/admin">Administration</NavMenuItem>
 									)}
 									<Divider />
-									<MenuItem>Se déconnecter</MenuItem>
+									<MenuItem component="a" href={this.getURL('logout')}>Se déconnecter</MenuItem>
 								</Menu>
 							</React.Fragment>
 						) : (
-							<NavButton to="/login">Se connecter</NavButton>
+							<Button component="a" href={this.getURL('login')} color="inherit">Se connecter</Button>
 						)}
 					</div>
 				</Toolbar>
