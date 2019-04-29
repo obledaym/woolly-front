@@ -101,15 +101,15 @@ class SaleDetail extends React.Component{
 				</div>
 
 				{!isConnected && <p className={classes.alert}>Veuillez vous connecter pour acheter.</p>}
-				<Paper className={classes.tableRoot}>
-					<Loader text="Loading items..." loading={this.props.items === null}>
+				<Loader text="Loading items..." loading={this.props.items === null}>
+					<Paper className={classes.tableRoot}>
 						<ItemsTable
 							items={this.props.items}
 							quantities={this.state.quantities}
 							handleQuantityChange={this.handleQuantityChange}
 						/>				
-					</Loader>
-				</Paper>
+					</Paper>
+				</Loader>
 			</div>
 		)
 	}

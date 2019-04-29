@@ -9,7 +9,7 @@ import Error404 from './pages/Error404';
 import Sales from './pages/Sales';
 import SaleDetail from './pages/SaleDetail';
 import Login from './pages/Login';
-import ContactSpan from './components/Contact';
+import Contact from './components/Contact';
 
 const HEADER_HEIGHT = 64;
 
@@ -27,7 +27,7 @@ class App extends React.Component {
 							<Route path="/login" exact component={Login} />
 							<Route component={Error404} />
 						</Switch>
-						<ContactSpan/>
+						<Contact />
 					</div>
 				</BrowserRouter>
 			</Provider>
