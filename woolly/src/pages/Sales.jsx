@@ -8,12 +8,14 @@ import SaleCard from '../components/common/SaleCard';
 const decorator = connect(store => ({
 	sales: store.getData('sales', []),
 	fetching: store.isFetching('sales'),
+	fetched: store.isFetched('sales'),
 	// pagination: store.getPagination('sales'),
 }))
 
 class Sales extends React.Component {
 	componentDidMount() {
-		this.props.dispatch(actions.sales.all({ include: 'association' }));
+		if (!this.props.fetched)
+			this.props.dispatch(actions.sales.all({ include: 'association' }));
 	}
 
 	render() {
@@ -26,7 +28,7 @@ class Sales extends React.Component {
 					</div>
 				</Loader>
 			</div>
-		)
+		);
 	}
 }
 
@@ -34,6 +36,6 @@ const titleStyle = {
 	fontFamily: "roboto, sans-serif",
 	fontWeight: "lighter",
 	fontSize: "2em",
-}
+};
 
 export default decorator(Sales)

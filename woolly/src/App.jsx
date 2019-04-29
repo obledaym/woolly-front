@@ -12,11 +12,11 @@ import Error404 from './pages/Error404';
 import Sales from './pages/Sales';
 import SaleDetail from './pages/SaleDetail';
 import LoginLogout from './pages/LoginLogout';
+import Contact from './components/Contact';
 
 const HEADER_HEIGHT = 64;
 
 class App extends React.Component {
-
 	componentDidMount() {
 		// Get connected user
 		store.dispatch(actions('/auth/me').definePath(['auth']).get())
@@ -27,7 +27,7 @@ class App extends React.Component {
 			<Provider store={store}>
 				<Loader text="Loading..." loading={store.getState().isFetching('auth')}>
 					<BrowserRouter>
-						<div style={{ paddingTop: HEADER_HEIGHT }}>
+						<div style={{ paddingTop: HEADER_HEIGHT, minHeight: '100vh', boxSizing: 'border-box' }}>
 							<Header height={HEADER_HEIGHT} />
 							<Switch>
 								<Route path="/" exact component={Home} />
@@ -37,6 +37,7 @@ class App extends React.Component {
 								<Route path="/logout" exact render={props => <LoginLogout {...props} action="logout" />} />
 								<Route component={Error404} />
 							</Switch>
+							<Contact />
 						</div>
 					</BrowserRouter>
 				</Loader>
