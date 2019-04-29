@@ -196,11 +196,12 @@ export class Actions {
 				path: this.path,
 				timestamp: Date.now(),
 			},
-			payload: axios[actionData.method](
-				this.generateUri(this.rootUri + this.uri, queryParams),
-				jsonData,
-				{ withCredentials: true }
-			),
+			payload: axios.request({
+				url: this.generateUri(this.rootUri + this.uri, queryParams),
+				method: actionData.method,
+				data: jsonData,
+				withCredentials: true,
+			}),
 		};
 	}
 

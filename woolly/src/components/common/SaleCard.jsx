@@ -16,8 +16,8 @@ class SaleCard extends React.Component {
 				<h4 className={classes.title}>{sale.name}</h4>
 				<span className={classes.subtitle}>Par {sale.association.name}</span>
 				<p className={classes.description}>{shorten(sale.description, 150)}</p>
-
 			</CardContent>
+
 			<CardActions>
 				<NavButton to={'/ventes/'+sale.id}>Accéder à la vente</NavButton>
 			</CardActions>

@@ -1,34 +1,24 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import axios from 'axios';
+import { connect } from 'react-redux';
 
 import { withStyles } from '@material-ui/core/styles';
 import { MoreVert } from '@material-ui/icons';
 import { NavLink } from 'react-router-dom';
-import { AppBar, Toolbar, Button, Menu, MenuItem, Divider } from '@material-ui/core';
+import { AppBar, Toolbar, Button, Menu, Divider } from '@material-ui/core';
 import { NavButton, NavMenuItem } from './common/Nav.jsx';
 
+const decorator = connect(store => ({
+	auth: store.getData('auth', {}),
+}))
 
 class Header extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			user: null,
 			expandMenu: false,
 			dropdownTarget: null,
 		};
-	}
-
-	componentDidMount() {
-		this.getUser();
-	}
-
-	getURL = action => `${axios.defaults.baseURL}/auth/${action}?redirect=${window.location}`
-
-	getUser = async () => {
-		// TODO Add to store
-		const resp = await axios.get('auth/me', { withCredentials: true });
-		this.setState({ user: resp.data.authenticated ? resp.data.user : null })
 	}
 
 	openDropdown = event =>{
@@ -43,9 +33,7 @@ class Header extends React.Component {
 	}
 
 	render() {
-		const { classes } = this.props;
-		const { user } = this.state;
-
+		const { auth, classes } = this.props;
 		return (
 			<AppBar position="fixed" style={{ height: this.props.height }}>
 				<Toolbar className={classes.toolbar + ' container'}>
@@ -53,9 +41,9 @@ class Header extends React.Component {
 					<div>
 						<NavButton to="/">Accueil</NavButton>
 						<NavButton to="/ventes">Ventes</NavButton>
-						{Boolean(user) ? (
+						{auth.authenticated ? (
 							<React.Fragment>
-								<Button color="inherit" onClick={this.openDropdown}>{user.first_name} <MoreVert /></Button>
+								<Button color="inherit" onClick={this.openDropdown}>{auth.user.first_name} <MoreVert /></Button>
 								<Menu
 									anchorEl={this.state.dropdownTarget}
 									open={Boolean(this.state.dropdownTarget)}
@@ -63,15 +51,15 @@ class Header extends React.Component {
 								>
 									<NavMenuItem to="/commandes">Mes commandes</NavMenuItem>
 									<NavMenuItem to="/compte">Mon compte</NavMenuItem>
-									{user.is_admin && (
+									{auth.user.is_admin && (
 										<NavMenuItem to="/admin">Administration</NavMenuItem>
 									)}
 									<Divider />
-									<MenuItem component="a" href={this.getURL('logout')}>Se déconnecter</MenuItem>
+									<NavMenuItem to="/logout">Se déconnecter</NavMenuItem>
 								</Menu>
 							</React.Fragment>
 						) : (
-							<Button component="a" href={this.getURL('login')} color="inherit">Se connecter</Button>
+						  <NavButton to="/login">Se connecter</NavButton>
 						)}
 					</div>
 				</Toolbar>
@@ -94,9 +82,9 @@ const styles = theme => ({
 	},
 	brand: {
 		fontSize: 20,
-		color: "white",
-		textDecoration: "none",
-		fontFamily: "roboto, sans-serif"
+		color: 'white',
+		textDecoration: 'none',
+		fontFamily: 'Roboto, sans-serif'
 	},
 	logo: {
 		maxHeigth: 70,
@@ -108,4 +96,4 @@ const styles = theme => ({
 	},
 });
 
-export default withStyles(styles)(Header);
+export default decorator(withStyles(styles)(Header));
