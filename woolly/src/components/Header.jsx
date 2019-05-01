@@ -1,11 +1,16 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
 
 import { withStyles } from '@material-ui/core/styles';
 import { MoreVert } from '@material-ui/icons';
-import { AppBar, Toolbar, Button, Menu, MenuItem, Divider } from '@material-ui/core';
-import { Link } from 'react-router-dom'
-import NavButton from './common/NavButton.jsx';
+import { NavLink } from 'react-router-dom';
+import { AppBar, Toolbar, Button, Menu, Divider } from '@material-ui/core';
+import { NavButton, NavMenuItem } from './common/Nav.jsx';
+
+const decorator = connect(store => ({
+	auth: store.getData('auth', {}),
+}))
 
 class Header extends React.Component {
 	constructor(props) {
@@ -16,40 +21,45 @@ class Header extends React.Component {
 		};
 	}
 
-	openDropdown = event => this.setState({ dropdownTarget: event.currentTarget })
-	closeDropdown = () => this.setState({ dropdownTarget: null })
+	openDropdown = event =>{
+		this.setState({ dropdownTarget: event.currentTarget });
+		document.addEventListener('mouseup', this.closeDropdown);
+	}
+
+	closeDropdown = event => {
+		document.removeEventListener('mouseup',this.closeDropdown);
+		if (this.state.dropdownTarget)
+			this.setState({ dropdownTarget: null });
+	}
 
 	render() {
-		const { classes } = this.props;
-		const isConnected = !false;
-		const isAdmin = !false;
-		
+		const { auth, classes } = this.props;
 		return (
 			<AppBar position="fixed" style={{ height: this.props.height }}>
 				<Toolbar className={classes.toolbar + ' container'}>
-					<span className={classes.brand}>Woolly</span>
+					<NavLink className={classes.brand} to="/">Woolly</NavLink>
 					<div>
 						<NavButton to="/">Accueil</NavButton>
 						<NavButton to="/ventes">Ventes</NavButton>
-						{isConnected ? (
+						{auth.authenticated ? (
 							<React.Fragment>
-								<Button color="inherit" onClick={this.openMenu}>Alexandre <MoreVert /></Button>
+								<Button color="inherit" onClick={this.openDropdown}>{auth.user.first_name} <MoreVert /></Button>
 								<Menu
 									anchorEl={this.state.dropdownTarget}
 									open={Boolean(this.state.dropdownTarget)}
 									onClose={this.closeMenu}
 								>
-									<MenuItem>Mes commandes</MenuItem>
-									<MenuItem><Link to="/mon_compte" style={{color: "inherit", textDecoration: "none"}}>Mon Compte</Link></MenuItem>
-									{isAdmin && (
-										<MenuItem>Administration</MenuItem>
+									<NavMenuItem to="/commandes">Mes commandes</NavMenuItem>
+									<NavMenuItem to="/compte">Mon compte</NavMenuItem>
+									{auth.user.is_admin && (
+										<NavMenuItem to="/admin">Administration</NavMenuItem>
 									)}
 									<Divider />
-									<MenuItem>Se déconnecter</MenuItem>
+									<NavMenuItem to="/logout">Se déconnecter</NavMenuItem>
 								</Menu>
 							</React.Fragment>
 						) : (
-							<NavButton to="/login">Se connecter</NavButton>
+						  <NavButton to="/login">Se connecter</NavButton>
 						)}
 					</div>
 				</Toolbar>
@@ -71,7 +81,10 @@ const styles = theme => ({
 		margin: 'auto',
 	},
 	brand: {
-		fontSize: 24,
+		fontSize: 20,
+		color: 'white',
+		textDecoration: 'none',
+		fontFamily: 'Roboto, sans-serif'
 	},
 	logo: {
 		maxHeigth: 70,
@@ -83,4 +96,4 @@ const styles = theme => ({
 	},
 });
 
-export default withStyles(styles)(Header);
+export default decorator(withStyles(styles)(Header));
