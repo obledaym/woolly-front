@@ -5,7 +5,8 @@ import store from './redux/store';
 import actions from './redux/actions';
 
 import Header from './components/Header';
-import Loader from './components/Loader';
+import MainLoader from './components/MainLoader';
+import ProtectedRoute from './components/common/ProtectedRoute';
 
 import Home from './pages/Home';
 import Error404 from './pages/Error404';
@@ -20,13 +21,13 @@ const HEADER_HEIGHT = 64;
 class App extends React.Component {
 	componentDidMount() {
 		// Get connected user
-		store.dispatch(actions('/auth/me').definePath(['auth']).get())
+		store.dispatch(actions('/auth/me').definePath(['auth']).all({ include: 'usertype' }));
 	}
 
 	render() {
 		return (
 			<Provider store={store}>
-				<Loader text="Loading..." loading={store.getState().isFetching('auth')}>
+				<MainLoader>
 					<BrowserRouter>
 						<div style={{ paddingTop: HEADER_HEIGHT, minHeight: '100vh', boxSizing: 'border-box' }}>
 							<Header height={HEADER_HEIGHT} />
@@ -34,7 +35,7 @@ class App extends React.Component {
 								<Route path="/" exact component={Home} />
 								<Route path="/ventes" exact component={Sales} />
 								<Route path="/ventes/:sale_id" exact component={SaleDetail} />
-								<Route path="/compte" exact component={Account} />
+								<ProtectedRoute path="/compte" exact component={Account} />
 								<Route path="/login" exact render={props => <LoginLogout {...props} action="login" />} />
 								<Route path="/logout" exact render={props => <LoginLogout {...props} action="logout" />} />
 								<Route component={Error404} />
@@ -42,7 +43,7 @@ class App extends React.Component {
 							<Contact />
 						</div>
 					</BrowserRouter>
-				</Loader>
+				</MainLoader>
 			</Provider>
 		);
 	}
