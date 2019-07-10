@@ -7,6 +7,7 @@ import { MoreVert, Home, ShoppingCart, AccountCircle } from '@material-ui/icons'
 import { NavLink } from 'react-router-dom';
 import { AppBar, Toolbar, Button, Menu, Divider } from '@material-ui/core';
 import { NavButton, NavMenuItem } from './common/Nav.jsx';
+import { textOrIcon } from '../utils';
 
 const decorator = connect(store => ({
 	auth: store.getData('auth', {}),
@@ -40,8 +41,8 @@ class Header extends React.Component {
 				<Toolbar className={'container ' + classes.toolbar}>
 					<NavLink className={classes.brand} to="/">Woolly</NavLink>
 					<div>
-						<NavButton to="/">{largeDisplay ? 'Accueil' : <Home />}</NavButton>
-						<NavButton to="/ventes">{largeDisplay ? 'Ventes' : <ShoppingCart />}</NavButton>
+						<NavButton to="/">{textOrIcon('Accueil', Home, largeDisplay)}</NavButton>
+						<NavButton to="/ventes">{textOrIcon('Ventes', ShoppingCart, largeDisplay)}</NavButton>
 						{auth.authenticated ? (
 							<React.Fragment>
 								<Button color="inherit" onClick={this.openAuthMenu}>
