@@ -2,13 +2,10 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Route, Redirect } from 'react-router-dom';
-import Loader from '../Loader';
 
-const decorator = connect(store => ({
+const connector = connect(store => ({
 	auth: store.getData('auth', null),
 }))
-
-
 class ProtectedRoute extends React.Component {
 
 	isAuthorized = (only, auth) => {
@@ -55,4 +52,4 @@ ProtectedRoute.defaultProps = {
 	redirection: '/login',
 }
 
-export default decorator(ProtectedRoute);
+export default connector(ProtectedRoute);

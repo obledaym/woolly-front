@@ -45,25 +45,25 @@ class OrdersList extends React.Component{
 		);
 	}
 
-	render(){
+	render() {
 		const { classes, orders } = this.props
-
 		return(
-			<Table>
-				<TableHead>
-					<TableRow>
-						<TableCell className={classes.head}>Vente</TableCell>
-						<TableCell className={classes.head}>Statut</TableCell>
-						<TableCell className={classes.head}>Action</TableCell>
-						<TableCell className={classes.head}>Articles</TableCell>
-					</TableRow>
-				</TableHead>
-
-				<TableBody>
-					{orders.map(this.getOrderRow)}
-				</TableBody>
-			</Table>
-		)
+			<div className={classes.container}>
+				<Table>
+					<TableHead>
+						<TableRow className={classes.row}>
+							<TableCell className={classes.head}>Vente</TableCell>
+							<TableCell className={classes.head}>Statut</TableCell>
+							<TableCell className={classes.head}>Action</TableCell>
+							<TableCell className={classes.head}>Articles</TableCell>
+						</TableRow>
+					</TableHead>
+					<TableBody>
+						{orders.map(this.getOrderRow)}
+					</TableBody>
+				</Table>
+			</div>
+		);
 	}
 }
 
@@ -72,10 +72,16 @@ OrdersList.propTypes = {
 }
 
 const styles = theme => ({
+	container: {
+		overflowX: 'auto',
+	},
 	head: {
 		fontWeight: 500,
-		fontSize: "1em",
-		color: "rgba(0,0,0,.7)"
+		fontSize: '1em',
+		color: 'rgba(0,0,0,.7)',
+	},
+	row: {
+		height: '48px',
 	}
 })
 

@@ -9,9 +9,13 @@ class Loader extends React.Component {
 			return this.props.children;
 
 		// Show loader
-		const { classes, text, size, direction } = this.props;
+		const { classes, fluid, text, size, direction } = this.props;
+		let containerClasses = [classes.container, classes[size], classes[direction] ];
+		if (fluid)
+			containerClasses.push(classes.fluid);
+		
 		return (
-			<div className={[classes.container, classes[size], classes[direction] ].join(' ')}>
+			<div className={containerClasses.join(' ')}>
 				<CircularProgress className={classes.spinner} />
 				{text && <span className="text">{text}</span>}
 			</div>
@@ -29,16 +33,19 @@ Loader.propTypes = {
 
 Loader.defaultProps = {
 	loading: true,
+	fluid: true,
 	size: 'md',
 	direction: 'right',
 }
 
 const styles = {
 	container: {
-		margin: 'auto',
 		display: 'flex',
 		alignItems: 'center',
 		justifyContent: 'center',
+	},
+	fluid: {
+		margin: 'auto',
 	},
 	spinner: {
 		margin: '0.5em',

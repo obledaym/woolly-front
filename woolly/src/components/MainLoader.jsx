@@ -17,7 +17,7 @@ class MainLoader extends React.Component {
 		return (
 			<div className={classes.container}>
 				<h1>Woolly</h1>
-				<Loader />
+				<Loader fluid={false} />
 			</div>
 		);
 	}
