@@ -15,7 +15,7 @@ const connector = connect(store => ({
 
 class Sales extends React.Component {
 	componentDidMount() {
-		if (!this.props.fetched)
+		if (!this.props.fetched || this.props.sales.length === 1)
 			this.props.dispatch(actions.sales.all({ include: 'association' }));
 	}
 

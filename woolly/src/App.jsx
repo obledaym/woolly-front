@@ -31,7 +31,7 @@ class App extends React.Component {
 			<Provider store={store}>
 				<MainLoader>
 					<BrowserRouter>
-						<div style={{ paddingTop: HEADER_HEIGHT, minHeight: '100vh', boxSizing: 'border-box' }}>
+						<div style={{ paddingTop: HEADER_HEIGHT, minHeight: '100vh', boxSizing: 'border-box', paddingBottom: '50px' }}>
 							<Header height={HEADER_HEIGHT} />
 							<Switch>
 								<Route path="/" exact component={Home} />

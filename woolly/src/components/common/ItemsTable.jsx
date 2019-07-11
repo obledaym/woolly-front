@@ -7,7 +7,7 @@ import { Table, TableBody, TableRow, TableCell, TextField } from '@material-ui/c
 
 class ItemsTable extends React.Component {
 	render() {
- 		const { classes, items, quantities } = this.props;
+ 		const { classes, items, disabled, quantities } = this.props;
  		if (!items)
  			return <Loader text="Loading items..." />
 
@@ -28,6 +28,8 @@ class ItemsTable extends React.Component {
 										id={String(item.id)}
 										value={quantities[item.id] || 0}
 										onChange={this.props.handleQuantityChange}
+										disabled={disabled}
+										title={disabled && "Connectez vous pour acheter"}
 										type="number"
 										inputProps={{ min: 0, max: item.max_per_user }}
 										classes={{ root: classes.cell }}
@@ -46,9 +48,17 @@ class ItemsTable extends React.Component {
 
 ItemsTable.propTypes = {
 	classes: PropTypes.object.isRequired,
+	disabled: PropTypes.bool,
 	items: PropTypes.array,
 	quantities: PropTypes.object,
 	handleQuantityChange: PropTypes.func,
+}
+
+ItemsTable.defaultProps = {
+	disabled: false,
+	items: [],
+	quantities: null,
+	handleQuantityChange: null,
 }
 
 const styles = {
@@ -57,10 +67,10 @@ const styles = {
 	},
 	row: {
 		height: 80,
-		transition: "box-shadow .45s ease",
+		transition: 'box-shadow .45s ease',
 		'&:hover': {
-			boxShadow: "0 8px 17px 0 rgba(0,0,0,.2), 0 6px 20px 0 rgba(0,0,0,.19)"
-		}
+			boxShadow: '0 8px 17px 0 rgba(0,0,0,.2), 0 6px 20px 0 rgba(0,0,0,.19)',
+		},
 	},
 	cell: {
 		margin: 0,
