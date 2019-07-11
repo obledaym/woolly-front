@@ -9,13 +9,13 @@ import { Table, TableBody, TableCell, TableHead, TableRow,
 				 List, ListItem, ListItemText, Button } from '@material-ui/core';
 
 const ORDER_STATUS = {
-	0: { color: 'grey',   actions: [ 'cancel', ],           label: 'En cours' },
-	1: { color: 'yellow', actions: [ 'cancel', ],           label: 'En attente de Validation' },
-	2: { color: 'green',  actions: [ 'tickets', 'modify' ], label: 'Validée' },
-	3: { color: 'yellow', actions: [ 'cancel', ],           label: 'En attente de Paiement' },
-	4: { color: 'green',  actions: [ 'tickets', 'modify' ], label: 'Payé' },
-	5: { color: 'red',    actions: [],                      label: 'Expirée' },
-	6: { color: 'black',  actions: [],                      label: 'Annulée' },
+	0: { color: '#565656', actions: [ 'cancel', ],           label: 'En cours' },
+	1: { color: '#ff5722', actions: [ 'cancel', ],           label: 'En attente de Validation' },
+	2: { color: '#008805', actions: [ 'tickets', 'modify' ], label: 'Validée' },
+	3: { color: '#ff5722', actions: [ 'cancel', ],           label: 'En attente de Paiement' },
+	4: { color: '#008805', actions: [ 'tickets', 'modify' ], label: 'Payé' },
+	5: { color: '#000000', actions: [],                      label: 'Expirée' },
+	6: { color: '#e00000', actions: [],                      label: 'Annulée' },
 }
 
 const ACTIONS = {
