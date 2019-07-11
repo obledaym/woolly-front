@@ -29,7 +29,7 @@ class ItemsTable extends React.Component {
 										value={quantities[item.id] || 0}
 										onChange={this.props.handleQuantityChange}
 										disabled={disabled}
-										title={disabled && "Connectez vous pour acheter"}
+										title={disabled ? "Connectez vous pour acheter" : null}
 										type="number"
 										inputProps={{ min: 0, max: item.max_per_user }}
 										classes={{ root: classes.cell }}
