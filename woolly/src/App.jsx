@@ -16,6 +16,8 @@ import SaleDetail from './pages/SaleDetail';
 import LoginLogout from './pages/LoginLogout';
 import Contact from './components/Contact';
 
+const FakeComponent = props => (<span>FakeComponent</span>)
+
 const HEADER_HEIGHT = 64;
 
 class App extends React.Component {
@@ -35,7 +37,11 @@ class App extends React.Component {
 								<Route path="/" exact component={Home} />
 								<Route path="/ventes" exact component={Sales} />
 								<Route path="/ventes/:sale_id" exact component={SaleDetail} />
+
 								<ProtectedRoute path="/compte" exact component={Account} />
+								<ProtectedRoute path="/commandes" exact component={FakeComponent} />
+								<ProtectedRoute path="/commandes/:order_id" exact component={FakeComponent} />
+
 								<Route path="/login" exact render={props => <LoginLogout {...props} action="login" />} />
 								<Route path="/logout" exact render={props => <LoginLogout {...props} action="logout" />} />
 								<Route component={Error404} />
