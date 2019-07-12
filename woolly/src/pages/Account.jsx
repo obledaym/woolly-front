@@ -5,10 +5,10 @@ import actions from '../redux/actions';
 
 import { withStyles } from '@material-ui/core/styles';
 import { Grid } from '@material-ui/core'; 
-import Loader from '../components/Loader';
+import Loader from '../components/common/Loader';
 
-import AccountDetails from '../components/common/AccountDetails';
-import OrdersList from '../components/common/OrdersList';
+import AccountDetails from '../components/users/AccountDetails';
+import OrdersList from '../components/orders/OrdersList';
 
 
 const ORDERS_PATH = ['auth', 'orders'];

@@ -4,8 +4,8 @@ import { connect } from 'react-redux';
 
 import { withStyles } from '@material-ui/core/styles';
 import { MoreVert, Home, ShoppingCart, AccountCircle } from '@material-ui/icons';
-import { NavLink } from 'react-router-dom';
 import { AppBar, Toolbar, Button, Menu, Divider } from '@material-ui/core';
+import { NavLink } from 'react-router-dom';
 import { NavButton, NavMenuItem } from './common/Nav.jsx';
 import { textOrIcon } from '../utils';
 

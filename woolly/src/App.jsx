@@ -16,7 +16,7 @@ import SaleDetail from './pages/SaleDetail';
 import LoginLogout from './pages/LoginLogout';
 import Contact from './components/Contact';
 
-const FakeComponent = props => (<span>FakeComponent</span>)
+const FakeComponent = props => (<span>FakeComponent</span>) // TODO
 
 const HEADER_HEIGHT = 64;
 

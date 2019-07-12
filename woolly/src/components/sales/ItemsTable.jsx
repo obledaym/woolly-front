@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types';
 
-import Loader from '../Loader';
+import Loader from '../common/Loader';
 import { withStyles } from '@material-ui/core/styles';
 import { Table, TableBody, TableRow, TableCell, TextField } from '@material-ui/core/';
 

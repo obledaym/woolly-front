@@ -3,14 +3,14 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import actions from '../redux/actions';
 
-import Loader from '../components/Loader';
-import ItemsTable from '../components/common/ItemsTable';
+import Loader from '../components/common/Loader';
+import ItemsTable from '../components/sales/ItemsTable';
 import { withStyles } from '@material-ui/core/styles';
 import { Button, Paper } from '@material-ui/core/';
 import { ShoppingCart, Delete } from '@material-ui/icons';
 
 
-const decorator = connect((store, props) => {
+const connector = connect((store, props) => {
 	const saleId = props.match.params.sale_id;
 	return {
 		authenticated: Boolean(store.getData('auth', {}).authenticated),
@@ -206,4 +206,4 @@ const styles = theme => ({
 	}
 });
 
-export default decorator(withStyles(styles)(SaleDetail));
+export default connector(withStyles(styles)(SaleDetail));

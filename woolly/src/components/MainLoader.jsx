@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { withStyles } from '@material-ui/core/styles';
-import Loader from './Loader';
+import Loader from './common/Loader';
 
 const decorator = connect(store => ({
 	auth: store.get('auth', {}),
