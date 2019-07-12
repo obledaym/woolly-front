@@ -1,6 +1,6 @@
 import React from 'react';
 import axios from 'axios';
-import Loader from '../components/Loader';
+import Loader from '../components/common/Loader';
 
 class Login extends React.Component {
 	componentDidMount() {

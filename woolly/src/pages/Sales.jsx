@@ -1,11 +1,12 @@
 import React from 'react'
 import { connect } from 'react-redux';
 import actions from '../redux/actions';
+import { withStyles } from '@material-ui/core/styles';
 
-import Loader from '../components/Loader';
-import SaleCard from '../components/common/SaleCard';
+import Loader from '../components/common/Loader';
+import SaleCard from '../components/sales/SaleCard';
 
-const decorator = connect(store => ({
+const connector = connect(store => ({
 	sales: store.getData('sales', []),
 	fetching: store.isFetching('sales'),
 	fetched: store.isFetched('sales'),
@@ -14,16 +15,18 @@ const decorator = connect(store => ({
 
 class Sales extends React.Component {
 	componentDidMount() {
-		if (!this.props.fetched)
+		if (!this.props.fetched || this.props.sales.length === 1)
 			this.props.dispatch(actions.sales.all({ include: 'association' }));
 	}
 
 	render() {
-		return(
-			<div className="container" style={{ marginTop: '60px' }}>
-				<h2 style={titleStyle}>Liste des ventes</h2>
+		const { classes } = this.props;
+		return (
+			<div className="container">
+				<h1>Liste des ventes</h1>
+
 				<Loader loading={this.props.fetching} text=" Récupération des ventes en cours...">
-					<div style={{ display: 'flex' }}>
+					<div className={classes.container}>
 						{this.props.sales.map(sale => <SaleCard key={sale.id} sale={sale} /> )}
 					</div>
 				</Loader>
@@ -32,10 +35,12 @@ class Sales extends React.Component {
 	}
 }
 
-const titleStyle = {
-	fontFamily: "roboto, sans-serif",
-	fontWeight: "lighter",
-	fontSize: "2em",
+const styles = {
+	container: {
+		display: 'flex',
+		flexWrap: 'wrap',
+		// overflowX: 'auto',
+	}
 };
 
-export default decorator(Sales)
+export default connector(withStyles(styles)(Sales));

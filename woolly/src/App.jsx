@@ -5,34 +5,43 @@ import store from './redux/store';
 import actions from './redux/actions';
 
 import Header from './components/Header';
-import Loader from './components/Loader';
+import MainLoader from './components/MainLoader';
+import ProtectedRoute from './components/common/ProtectedRoute';
 
 import Home from './pages/Home';
 import Error404 from './pages/Error404';
+import Account from './pages/Account';
 import Sales from './pages/Sales';
 import SaleDetail from './pages/SaleDetail';
 import LoginLogout from './pages/LoginLogout';
 import Contact from './components/Contact';
+
+const FakeComponent = props => (<span>FakeComponent</span>) // TODO
 
 const HEADER_HEIGHT = 64;
 
 class App extends React.Component {
 	componentDidMount() {
 		// Get connected user
-		store.dispatch(actions('/auth/me').definePath(['auth']).get())
+		store.dispatch(actions('/auth/me').definePath(['auth']).all({ include: 'usertype' }));
 	}
 
 	render() {
 		return (
 			<Provider store={store}>
-				<Loader text="Loading..." loading={store.getState().isFetching('auth')}>
+				<MainLoader>
 					<BrowserRouter>
-						<div style={{ paddingTop: HEADER_HEIGHT, minHeight: '100vh', boxSizing: 'border-box' }}>
+						<div style={{ paddingTop: HEADER_HEIGHT, minHeight: '100vh', boxSizing: 'border-box', paddingBottom: '50px' }}>
 							<Header height={HEADER_HEIGHT} />
 							<Switch>
 								<Route path="/" exact component={Home} />
-								<Route path="/ventes" exact component={Sales} />
-								<Route path="/ventes/:sale_id" exact component={SaleDetail} />
+								<Route path="/sales" exact component={Sales} />
+								<Route path="/sales/:sale_id" exact component={SaleDetail} />
+
+								<ProtectedRoute path="/account" exact component={Account} />
+								<ProtectedRoute path="/orders" exact component={FakeComponent} />
+								<ProtectedRoute path="/orders/:order_id" exact component={FakeComponent} />
+
 								<Route path="/login" exact render={props => <LoginLogout {...props} action="login" />} />
 								<Route path="/logout" exact render={props => <LoginLogout {...props} action="logout" />} />
 								<Route component={Error404} />
@@ -40,7 +49,7 @@ class App extends React.Component {
 							<Contact />
 						</div>
 					</BrowserRouter>
-				</Loader>
+				</MainLoader>
 			</Provider>
 		);
 	}

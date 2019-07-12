@@ -4,7 +4,7 @@ import { shorten } from '../../utils';
 
 import { withStyles } from '@material-ui/core/styles';
 import { Card, CardContent, CardActions } from '@material-ui/core';
-import { NavButton } from './Nav.jsx';
+import { NavButton } from '../common/Nav';
 
 
 class SaleCard extends React.Component {
@@ -19,7 +19,7 @@ class SaleCard extends React.Component {
 			</CardContent>
 
 			<CardActions>
-				<NavButton to={'/ventes/'+sale.id}>Accéder à la vente</NavButton>
+				<NavButton to={`/sales/${sale.id}`}>Accéder à la vente</NavButton>
 			</CardActions>
 		</Card>
 		);
