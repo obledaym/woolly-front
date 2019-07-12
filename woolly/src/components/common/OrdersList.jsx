@@ -51,7 +51,7 @@ class OrdersList extends React.Component{
 	}
 	action_modify = event => {
 		const orderId = event.currentTarget.getAttribute('data-order-id');
-		this.props.history.push(`/commandes/${orderId}`);
+		this.props.history.push(`/orders/${orderId}`);
 	}
 	action_continue = event => {
 		const saleId = event.currentTarget.getAttribute('data-sale-id');

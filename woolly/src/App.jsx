@@ -35,12 +35,12 @@ class App extends React.Component {
 							<Header height={HEADER_HEIGHT} />
 							<Switch>
 								<Route path="/" exact component={Home} />
-								<Route path="/ventes" exact component={Sales} />
-								<Route path="/ventes/:sale_id" exact component={SaleDetail} />
+								<Route path="/sales" exact component={Sales} />
+								<Route path="/sales/:sale_id" exact component={SaleDetail} />
 
-								<ProtectedRoute path="/compte" exact component={Account} />
-								<ProtectedRoute path="/commandes" exact component={FakeComponent} />
-								<ProtectedRoute path="/commandes/:order_id" exact component={FakeComponent} />
+								<ProtectedRoute path="/account" exact component={Account} />
+								<ProtectedRoute path="/orders" exact component={FakeComponent} />
+								<ProtectedRoute path="/orders/:order_id" exact component={FakeComponent} />
 
 								<Route path="/login" exact render={props => <LoginLogout {...props} action="login" />} />
 								<Route path="/logout" exact render={props => <LoginLogout {...props} action="logout" />} />

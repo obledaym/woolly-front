@@ -4,7 +4,7 @@ import { withStyles } from '@material-ui/core/styles';
 import { Table, TableBody, TableCell, TableRow } from '@material-ui/core';
 
 class AccountDetails extends React.Component{
-	render(){
+	render() {
 		const { classes, user } = this.props
 		return (
 			<div className={classes.container}>

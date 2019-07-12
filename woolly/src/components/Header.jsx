@@ -42,7 +42,7 @@ class Header extends React.Component {
 					<NavLink className={classes.brand} to="/">Woolly</NavLink>
 					<div>
 						<NavButton to="/">{textOrIcon('Accueil', Home, largeDisplay)}</NavButton>
-						<NavButton to="/ventes">{textOrIcon('Ventes', ShoppingCart, largeDisplay)}</NavButton>
+						<NavButton to="/sales">{textOrIcon('Ventes', ShoppingCart, largeDisplay)}</NavButton>
 						{auth.authenticated ? (
 							<React.Fragment>
 								<Button color="inherit" onClick={this.openAuthMenu}>
@@ -55,8 +55,8 @@ class Header extends React.Component {
 									open={Boolean(this.state.authMenuTarget)}
 									onClose={this.closeAuthMenu}
 								>
-									<NavMenuItem to="/commandes">Mes commandes</NavMenuItem>
-									<NavMenuItem to="/compte">Mon compte</NavMenuItem>
+									<NavMenuItem to="/orders">Mes commandes</NavMenuItem>
+									<NavMenuItem to="/account">Mon compte</NavMenuItem>
 									{auth.user.is_admin && (
 										<NavMenuItem to="/admin">Administration</NavMenuItem>
 									)}

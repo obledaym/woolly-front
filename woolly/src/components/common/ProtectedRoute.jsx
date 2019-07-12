@@ -31,7 +31,7 @@ class ProtectedRoute extends React.Component {
 				{...routeProps} 
 				render={props => (this.isAuthorized(only, auth)
 					? <Component {...props} />
-					: <Redirect to={'/'} />
+					: <Redirect to={redirection} />
 				)}
 			/>
 		);
