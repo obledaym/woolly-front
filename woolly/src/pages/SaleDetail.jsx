@@ -3,16 +3,17 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import actions from '../redux/actions';
 
-import Loader from '../components/Loader';
-import ItemsTable from '../components/common/ItemsTable';
+import Loader from '../components/common/Loader';
+import ItemsTable from '../components/sales/ItemsTable';
 import { withStyles } from '@material-ui/core/styles';
 import { Button, Paper } from '@material-ui/core/';
 import { ShoppingCart, Delete } from '@material-ui/icons';
 
 
-const decorator = connect((store, props) => {
+const connector = connect((store, props) => {
 	const saleId = props.match.params.sale_id;
 	return {
+		authenticated: Boolean(store.getData('auth', {}).authenticated),
 		sale: store.getData(['sales', saleId], null),
 		items: store.getData(['sales', saleId, 'items' ], null),
 	};
@@ -46,9 +47,7 @@ class SaleDetail extends React.Component{
 	handleReset = () => this.setState({ quantities: {} })
 
 	render(){
-		const { classes, sale } = this.props;
-		const isConnected = true;
-
+		const { classes, sale, authenticated } = this.props;
 		if (!sale || this.props.fetchingSale)
 			return <Loader text="Loading sale..." />
 
@@ -84,7 +83,7 @@ class SaleDetail extends React.Component{
 						<Button
 							color="primary"
 							variant="contained"
-							disabled={!isConnected}
+							disabled={!authenticated}
 							style={{margin: '0 1em',padding: '.85rem 2.13rem'}}
 						>
 							<ShoppingCart className={classes.icon} /> ACHETER
@@ -100,16 +99,18 @@ class SaleDetail extends React.Component{
 					</div>
 				</div>
 
-				{!isConnected && <p className={classes.alert}>Veuillez vous connecter pour acheter.</p>}
-				<Paper className={classes.tableRoot}>
-					<Loader text="Loading items..." loading={this.props.items === null}>
+				{!authenticated && <p className={classes.alert}>Veuillez vous connecter pour acheter.</p>}
+				<p>CGV</p>
+				<Loader text="Loading items..." loading={this.props.items === null}>
+					<Paper className={classes.tableRoot}>
 						<ItemsTable
+							disabled={!authenticated}
 							items={this.props.items}
 							quantities={this.state.quantities}
 							handleQuantityChange={this.handleQuantityChange}
 						/>				
-					</Loader>
-				</Paper>
+					</Paper>
+				</Loader>
 			</div>
 		)
 	}
@@ -121,7 +122,6 @@ SaleDetail.propTypes = {
 
 const styles = theme => ({
 	title: {
-		fontFamily: 'roboto',
 		fontWeight: 100,
 		fontSize: '3rem',
 		textAlign: 'center',
@@ -129,7 +129,6 @@ const styles = theme => ({
 	},
 	subtitle: {
 		textAlign: 'center',
-		fontFamily: 'roboto',
 		fontWeight: 100,
 		fontSize: '1.3rem',
 		marginTop: 0,
@@ -144,7 +143,6 @@ const styles = theme => ({
 	description: {
 		textAlign: "justify",
 		paddingRight: "24px",
-		fontFamily: "roboto",
 		fontWeight: "100",
 		flex: "0 0 50%",
 		maxWidth: "50%",
@@ -169,16 +167,13 @@ const styles = theme => ({
 	},
 	date: {
 		display: "block",
-		fontFamily: "roboto",
 		fontWeight: "100",
 	},
 	detailsTitles: {
-		fontFamily: 'roboto',
 		fontWeight: 100,
 		fontSize: "1.4rem",
 	},
 	itemsTitle: {
-		fontFamily: 'roboto',
 		fontWeight: 100,
 		fontSize: "2rem",
 		flex: "0 0 50%",
@@ -199,17 +194,16 @@ const styles = theme => ({
 	tableRoot: {
 		width: "100%",
 		overflowX: 'auto',
-		marginTop: theme.spacing.unit*3,
-		marginBottom: theme.spacing.unit*3
+		marginTop: theme.spacing(3),
+		marginBottom: theme.spacing(3),
 	},
 	alert: {
 		textAlign: "center",
 		margin: "25px 0",
 		color: "#f50057",
 		fontSize: "1.2em",
-		fontFamily: "roboto",
 		fontWeight: 100,
 	}
 });
 
-export default decorator(withStyles(styles)(SaleDetail));
+export default connector(withStyles(styles)(SaleDetail));
