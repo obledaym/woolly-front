@@ -10,11 +10,15 @@ import ProtectedRoute from './components/common/ProtectedRoute';
 
 import Home from './pages/Home';
 import Error404 from './pages/Error404';
+import Contact from './components/Contact';
 import Account from './pages/Account';
+import LoginLogout from './pages/LoginLogout';
+
 import Sales from './pages/Sales';
 import SaleDetail from './pages/SaleDetail';
-import LoginLogout from './pages/LoginLogout';
-import Contact from './components/Contact';
+// import Orders from './pages/Orders';
+import OrderDetail from './pages/OrderDetail';
+
 
 const FakeComponent = props => (<span>FakeComponent</span>) // TODO
 
@@ -40,7 +44,7 @@ class App extends React.Component {
 
 								<ProtectedRoute path="/account" exact component={Account} />
 								<ProtectedRoute path="/orders" exact component={FakeComponent} />
-								<ProtectedRoute path="/orders/:order_id" exact component={FakeComponent} />
+								<ProtectedRoute path="/orders/:order_id" exact component={OrderDetail} />
 
 								<Route path="/login" exact render={props => <LoginLogout {...props} action="login" />} />
 								<Route path="/logout" exact render={props => <LoginLogout {...props} action="logout" />} />
