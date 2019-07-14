@@ -28,7 +28,7 @@ const ACTIONS = {
 const ActionButton = ({ order, text, Icon, onClick }) => (
 	<Button size="small" title={text} onClick={onClick}
 					data-order-id={order.id} data-sale-id={order.sale.id}>
-		<Icon title={text}></Icon>
+		<Icon title={text} />
 	</Button>
 );
 

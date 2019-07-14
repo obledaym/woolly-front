@@ -106,6 +106,7 @@ class OrderDetail extends React.Component {
 		return (
 			<div className="container">
 				<h1>Informations de la commande n°{order.id}</h1>
+				<p>Vous pouvez modifier les billets qui sont éditables en cliquant sur les différents champs.</p>
 				<div className={classes.ticketContainer}>
 					{Object.values(orderlineitems).map(orderlineitem =>  (
 						<Paper key={orderlineitem.id} className={classes.ticket}>
@@ -135,8 +136,8 @@ class OrderDetail extends React.Component {
 						Annuler les changements
 					</Button>
 					<Button className={classes.button} variant="contained"
-									onClick={this.saveChanges}>
-						{!saving ? (
+									disabled={!changing} onClick={this.saveChanges}>
+						{saving ? (
 							<Loader size="sm" text="Sauvegarde en cours..." />
 						) : (
 							"Sauvegarder les changements"
@@ -162,6 +163,7 @@ const styles = theme => ({
 		textAlign: 'right',
 		flexWrap: 'wrap',
 		marginTop: 50,
+		// TODO breakdown + icon
 	},
 
 	ticket: {
