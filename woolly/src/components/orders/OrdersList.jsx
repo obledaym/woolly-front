@@ -59,7 +59,8 @@ class OrdersList extends React.Component{
 	}
 	action_cancel = event => {
 		const orderId = event.currentTarget.getAttribute('data-order-id');
-		axios.delete(`/orders/${orderId}`, { withCredentials: true });
+		axios.delete(`/orders/${orderId}`, { withCredentials: true })
+						.then(this.props.updateOrders)
 	}
 
 	getOrderRow = order => {
