@@ -2,11 +2,12 @@ import React from 'react'
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import actions from '../redux/actions';
+import axios from 'axios';
 
 import Loader from '../components/common/Loader';
 import ItemsTable from '../components/sales/ItemsTable';
 import { withStyles } from '@material-ui/core/styles';
-import { Button, Paper } from '@material-ui/core/';
+import { Button, Paper, FormControlLabel, Checkbox } from '@material-ui/core';
 import { ShoppingCart, Delete } from '@material-ui/icons';
 
 
@@ -23,7 +24,10 @@ class SaleDetail extends React.Component{
 		super(props);
 		this.state = {
 			quantities: {},
+			buying: false,
+			cgvAccepted: false,
 		};
+		this.order = null;
 	}
 
 	componentDidMount() {
@@ -34,33 +38,72 @@ class SaleDetail extends React.Component{
 				this.props.dispatch(actions.sales(saleId).items.get())
 	}
 
+	canBuy = () => (
+		this.props.authenticated
+		&& this.state.cgvAccepted
+		&& Object.values(this.state.quantities).some(qt => qt > 0)
+	)
+
+	toggleCGV = event => this.setState(prevState => ({ cgvAccepted: !prevState.cgvAccepted }))
+
 	handleQuantityChange = event => {
-		const { id: key, value } = event.currentTarget;
+		const { id, value } = event.currentTarget;
 		this.setState(prevState => ({
 			quantities: {
 				...prevState.quantities,
-				[key]: Number(value),
+				[id]: Number(value),
 			},
 		}));
 	}
 
-	handleReset = () => this.setState({ quantities: {} })
+	handleReset = event => this.setState({ quantities: {} })
 
-	render(){
+	handleBuy = event => {
+		if (!this.canBuy())
+			return;
+		this.setState({ buying: true }, async () => {
+			const options = { withCredentials: true };
+
+			// Get Order
+			if (this.order === null) {
+				const saleId = this.props.match.params.sale_id;
+				this.order = (await axios.post('orders', { sale: saleId }, options)).data;
+			}
+
+			// Add orderlines
+			const order = this.order.id;
+			const promiseList = Object.entries(this.state.quantities).reduce((acc, [item, quantity]) => {
+				acc.push(axios.post('orderlines', { order, item: parseInt(item), quantity }, options));
+				return acc;
+			}, []);
+
+			// Once all orderlines are created, pay the order
+			Promise.all(promiseList)
+				.then(data => {
+					// Redirect to payment
+					const returnUrl = window.location.href.replace(this.props.location.pathname, `/orders/${order}`);
+					axios.get(`/orders/${order}/pay?return_url=${returnUrl}`, options)
+								.then(resp => window.location.href = resp.data.url)
+				})
+				.catch(error => console.log('error', error))
+		});
+	}
+
+	render() {
 		const { classes, sale, authenticated } = this.props;
+		const { cgvAccepted } = this.state;
 		if (!sale || this.props.fetchingSale)
-			return <Loader text="Loading sale..." />
+			return <Loader fluid text="Loading sale..." />
 
-		return(
-			<div className="container" style={{paddingTop: "60px"}}>
-
+		return (
+			<div className="container">
 				<h1 className={classes.title}>{sale.name}</h1>
 				<h2 className={classes.subtitle}>Organisé par {sale.association.name}</h2>
 
 				<div className={classes.details}>
 					<div className={classes.description}>
 						<h4 className={classes.detailsTitles}>Description</h4>
-						<p>{sale.description}</p> 
+						<p>{sale.description}</p>
 					</div>
 					<div className={classes.numbersContainer}>
 						<div className={classes.numbers}>
@@ -83,8 +126,9 @@ class SaleDetail extends React.Component{
 						<Button
 							color="primary"
 							variant="contained"
-							disabled={!authenticated}
+							disabled={!this.canBuy()}
 							style={{margin: '0 1em',padding: '.85rem 2.13rem'}}
+							onClick={this.handleBuy}
 						>
 							<ShoppingCart className={classes.icon} /> ACHETER
 						</Button>
@@ -99,8 +143,16 @@ class SaleDetail extends React.Component{
 					</div>
 				</div>
 
+				<p>
+					<FormControlLabel
+						control={<Checkbox checked={cgvAccepted} onChange={this.toggleCGV} />}
+						label="J'accepte les conditions générales de ventes (TODO Lien)"
+					/>
+				</p>
+
 				{!authenticated && <p className={classes.alert}>Veuillez vous connecter pour acheter.</p>}
-				<p>CGV</p>
+				{!cgvAccepted && <p className={classes.alert}>Veuillez accepter les CGV pour acheter.</p>}
+
 				<Loader text="Loading items..." loading={this.props.items === null}>
 					<Paper className={classes.tableRoot}>
 						<ItemsTable
@@ -160,7 +212,7 @@ const styles = theme => ({
 	text: {
 		margin: 0,
 		fontSize: 18,
-    fontWeight: 100,
+		fontWeight: 100,
 	},
 	icon: {
 		marginRight: 10,

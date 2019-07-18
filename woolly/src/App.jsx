@@ -23,6 +23,7 @@ import OrderDetail from './pages/OrderDetail';
 
 const FakeComponent = props => (<span>FakeComponent</span>) // TODO
 
+// TODO Set in theme
 const HEADER_HEIGHT = 64;
 const FOOTER_HEIGHT = 40;
 
@@ -38,7 +39,10 @@ class App extends React.Component {
 				<CssBaseline />
 				<MainLoader>
 					<BrowserRouter>
-						<div style={{ paddingTop: HEADER_HEIGHT, paddingBottom: FOOTER_HEIGHT, height: '100%', boxSizing: 'border-box' }}>
+						<div style={{
+							paddingTop: HEADER_HEIGHT, paddingBottom: FOOTER_HEIGHT,
+							height: '100%', boxSizing: 'border-box', overflowY: 'auto',
+						}}>
 							<Header height={HEADER_HEIGHT} />
 							<Switch>
 								<Route path="/" exact component={Home} />

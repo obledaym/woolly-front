@@ -1,14 +1,18 @@
 import React from 'react'
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
+import { Paper, Link } from '@material-ui/core';
 
 class Footer extends React.Component{
 	render() {
 		const { classes, height } = this.props;
 		return (
-			<div className={classes.contact}  style={{ height }}>
-				Made with ♥ by SiMDE. <a className={classes.mailto} href="mailto:simde@assos.utc.fr">Contact</a>
-			</div>
+			<Paper square elevation={4} className={classes.container} style={{ height }}>
+				<span>
+					Fait avec ♥ par le <Link href="https://assos.utc.fr/assos/simde" target="_blank" rel="noopener">SiMDE</Link>
+					 . <Link href="mailto:simde@assos.utc.fr">Contact</Link>
+				</span>
+			</Paper>
 		);
 	}
 }
@@ -19,17 +23,15 @@ Footer.propTypes = {
 };
 
 const styles = {
-	contact: {
+	container: {
 		position: 'fixed',
 		bottom: 0,
 		left: 0,
 		width: '100%',
-		textAlign: 'center',
-		padding: 10,
-	},
-	mailto: {
-		color: '#0275d8',
-		textDecoration: 'none',
+		display: 'flex',
+		justifyContent: 'center',
+		alignItems: 'center',
+		backgroundColor: '#ffffff',
 	},
 };
 
