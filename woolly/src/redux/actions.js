@@ -8,7 +8,11 @@
  */
 import axios from 'axios';
 
+// Set up Axios defaults
 axios.defaults.baseURL = 'http://localhost:8000';
+axios.defaults.xsrfHeaderName = 'X-CSRFToken';
+axios.defaults.xsrfCookieName = 'csrftoken';
+
 
 // Liste de toutes les actions REST api possibles
 export const actionsData = {
