@@ -28,8 +28,11 @@ class Loader extends React.Component {
 		// Container
 		if (textDirection)
 			container.flexDirection = FLEX_DIRECTIONS[textDirection];
-		if (fluid)
+		if (fluid) {
 			container.margin = 'auto';
+			container.height = '100%';
+			container.width = '100%';
+		}
 
 		// Text
 		if (text)
