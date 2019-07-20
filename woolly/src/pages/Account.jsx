@@ -42,10 +42,8 @@ class Account extends React.Component {
 	}
 
 	render() {
-		const { classes } = this.props
-		window.p = this.props;
-
-		return(
+		const { classes } = this.props;
+		return (
 			<div className="container">
 				<h1 className={classes.title}>Mon Compte</h1>
 				<Grid container spacing={2}>
@@ -69,31 +67,12 @@ Account.propTypes = {
 	classes: PropTypes.object.isRequired,
 }
 
+// TODO Remvoe
 const styles = theme => ({
 	title: {
 		fontSize: 32,
 		fontWeight: 100,
 	},
-	container: {
-		display: 'flex',
-		flexDirection: 'column',
-		[theme.breakpoints.up('md')]: {
-			flexDirection: 'row',
-		}
-	},
-	root: {
-		marginLeft: '5%',
-		marginRight: '0',
-		[theme.breakpoints.down('md')]: {
-			marginRight: '2%',
-			marginLeft: '2%',
-		}
-	},
-	inner: {
-		display: 'flex',
-		flexDirection: 'row',
-		flexWrap: 'wrap',
-	}
 })
 
 export default connector(withStyles(styles)(Account));

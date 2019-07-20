@@ -6,6 +6,10 @@ export function shorten(text, limit) {
 	return text;
 }
 
+export function capitalFirst(text) {
+	return text.charAt(0).toLocaleUpperCase() + text.slice(1);
+}
+
 export function textOrIcon(text, Icon, displayText) {
 	return displayText ? text : <Icon title={text} />
 }
