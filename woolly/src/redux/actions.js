@@ -59,6 +59,7 @@ export const actionHandler = {
 		const target = _target;
 
 		// On crée la méthode de gestion de requête
+		/* eslint-disable no-fallthrough */
 		const method = (...args) => {
 			let id;
 			let queryParams;
@@ -69,10 +70,10 @@ export const actionHandler = {
 				case 'one':
 				case 'get':
 					if (args.length > 0 || target.idIsGiven || prop === 'one') {
-						if (target.idIsGiven || prop === 'one') [queryParams, jsonData] = args;
-						else {
+						if (target.idIsGiven || prop === 'one') {
+							[queryParams, jsonData] = args;
+						} else {
 							[id, queryParams, jsonData] = args;
-
 							target.addId(id);
 						}
 
@@ -88,10 +89,10 @@ export const actionHandler = {
 				case 'update':
 				case 'remove':
 				case 'delete':
-					if (target.idIsGiven || prop === 'create') [queryParams, jsonData] = args;
-					else {
+					if (target.idIsGiven || prop === 'create') {
+						[queryParams, jsonData] = args;
+					} else {
 						[id, queryParams, jsonData] = args;
-
 						target.addUri(id);
 					}
 
@@ -109,42 +110,52 @@ export const actionHandler = {
 			// On retourne bien sûr un proxy sur sois-même pour se gérer de nouveau
 			return new Proxy(target, actionHandler);
 		};
+		/* eslint-enable no-fallthrough */
 
 		// Si c'est une action HTTP, l'exécuter
 		if (Object.keys(actionsData).includes(prop)) {
 			return method;
 		}
-		// Si c'est une méthode de l'objet Action, on l'exécute sans rochiner
+		// Si c'est une méthode de l'objet Action, on l'exécute sans rechigner
 		if (target[prop] !== undefined) {
 			return target[prop];
 		}
-		// Si on appelle une méthode qui agit directement sur la sauvegarde dans le store
-		if (prop === 'definePath') {
-			return path => {
-				target.path = path.slice();
-				target.pathLocked = true;
 
-				return new Proxy(target, actionHandler);
-			};
+		/* eslint-disable no-fallthrough */
+		/* eslint-disable default-case */
+		switch (prop) {
+			case 'setOptions':
+				return options => {
+					target.options = { ...target.options, ...options };
+					return new Proxy(target, actionHandler);
+				};
+
+			// Si on appelle une méthode qui agit directement sur la sauvegarde dans le store
+			case 'definePath':
+				return path => {
+					target.path = path.slice();
+					target.pathLocked = true;
+					return new Proxy(target, actionHandler);
+				};
+
+			// Si on appelle une méthode qui agit directement sur la sauvegarde dans le store
+			case 'addValidStatus':
+				return validStatus => {
+					target.validStatus.push(validStatus);
+					return new Proxy(target, actionHandler);
+				};
+
+			// Si on appelle une méthode qui agit directement sur la sauvegarde dans le store
+			case 'defineValidStatus':
+				return validStatus => {
+					target.validStatus = validStatus;
+					return new Proxy(target, actionHandler);
+				};
 		}
-		// Si on appelle une méthode qui agit directement sur la sauvegarde dans le store
-		if (prop === 'addValidStatus') {
-			return validStatus => {
-				target.validStatus.push(validStatus);
+		/* eslint-enable no-fallthrough */
+		/* eslint-enable default-case */
 
-				return new Proxy(target, actionHandler);
-			};
-		}
-		// Si on appelle une méthode qui agit directement sur la sauvegarde dans le store
-		if (prop === 'defineValidStatus') {
-			return validStatus => {
-				target.validStatus = validStatus;
-
-				return new Proxy(target, actionHandler);
-			};
-		}
-		// On ajoute la catégorie et on gère dynmaiquement si c'est un appel propriété/méthode (expliquer sur un article de mon blog)
-
+		// On ajoute la catégorie et on gère dynamiquement si c'est un appel propriété/méthode (expliqué sur un article de mon blog)
 		target.addUri(prop);
 		target.idIsGiven = false;
 
@@ -164,6 +175,12 @@ export class Actions {
 		this.pathLocked = false;
 		this.actions = actionsData;
 		this.validStatus = [200, 201, 202, 203, 204, 416];
+		this.options = {
+			type: undefined,
+			axios: {},
+			meta: {},
+			action: {},
+		};
 
 		return new Proxy(this, actionHandler);
 	}
@@ -191,21 +208,23 @@ export class Actions {
 
 	generateAction(action, queryParams = {}, jsonData = {}) {
 		const actionData = this.actions[action];
-
 		return {
-			type: this.generateType(action),
+			type: this.options.type || this.generateType(action),
 			meta: {
 				action: actionData.action,
 				validStatus: this.validStatus,
 				path: this.path,
 				timestamp: Date.now(),
+				...this.options.meta,
 			},
 			payload: axios.request({
 				url: this.generateUri(this.rootUri + this.uri, queryParams),
 				method: actionData.method,
 				data: jsonData,
 				withCredentials: true,
+				...this.options.axios,
 			}),
+			...this.options.action,
 		};
 	}
 

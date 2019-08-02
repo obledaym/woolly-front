@@ -116,7 +116,6 @@ export const store = {
 		}
 
 		const data = this.getData(props, []);
-
 		for (const k in data) {
 			if (data[k][key] === value) {
 				if (!forceReplacement || !(data[k] instanceof Object) || Object.keys(data[k]).length > 0) {
@@ -126,6 +125,9 @@ export const store = {
 		}
 
 		return replacement;
+	},
+	getRessources(props, replacement = null, forceReplacement = true) {
+		return this.get(this.propsToArray(props).concat(['resources']), replacement, forceReplacement);
 	},
 	getError(props, replacement = null, forceReplacement = true) {
 		return this.get(this.propsToArray(props).concat(['error']), replacement, forceReplacement);
@@ -237,8 +239,7 @@ export default createStore((state = store, action) => {
 		});
 	}
 
-	console.debug(action.type);
-
+	/* eslint-disable no-fallthrough */
 	if (action.meta && action.meta.path && action.meta.path.length > 0) {
 		return produce(state, draft => {
 			let { path } = action.meta;
@@ -409,6 +410,7 @@ export default createStore((state = store, action) => {
 			return draft;
 		});
 	}
+	/* eslint-enable no-fallthrough */
 
 	return state;
 }, middlewares);
