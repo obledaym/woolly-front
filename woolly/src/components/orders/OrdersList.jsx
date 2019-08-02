@@ -7,6 +7,9 @@ import { withStyles } from '@material-ui/core/styles';
 import { SaveAlt, Edit, PlayCircleOutline, Clear } from '@material-ui/icons';
 import { Table, TableBody, TableCell, TableHead, TableRow,
 				 List, ListItem, ListItemText, Button } from '@material-ui/core';
+import OrderlinesList from './OrderlinesList';
+
+const OLL_PROPS = { dense: true, disablePadding: true };
 
 const ORDER_STATUS = {
 	0: { color: '#565656', actions: [ 'cancel', ],            label: 'En cours' },
@@ -75,7 +78,7 @@ class OrdersList extends React.Component{
 				<Cell>{order.sale.name}</Cell>
 				<Cell align="center">{statusCell}</Cell>
 				<Cell align="center">{actionsCell}</Cell>
-				<Cell>{this.getOrderlinesList(order.orderlines)}</Cell>
+				<Cell><OrderlinesList orderlines={order.orderlines} listProps={OLL_PROPS} /></Cell>
 			</TableRow>
 		);
 	}
