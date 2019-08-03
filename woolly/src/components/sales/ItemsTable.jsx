@@ -25,13 +25,12 @@ class ItemsTable extends React.Component {
 							{quantities && (
 								<TableCell>
 									<TextField
-										id={String(item.id)}
 										value={quantities[item.id] || 0}
-										onChange={this.props.handleQuantityChange}
+										onChange={this.props.onQuantityChange}
 										disabled={disabled}
 										title={disabled ? "Connectez vous pour acheter" : null}
 										type="number"
-										inputProps={{ min: 0, max: item.max_per_user }}
+										inputProps={{ min: 0, max: item.max_per_user, 'data-item-id': String(item.id) }}
 										classes={{ root: classes.cell }}
 										InputLabelProps={{ shrink: true }}
 										margin="normal"
@@ -51,14 +50,14 @@ ItemsTable.propTypes = {
 	disabled: PropTypes.bool,
 	items: PropTypes.array,
 	quantities: PropTypes.object,
-	handleQuantityChange: PropTypes.func,
+	onQuantityChange: PropTypes.func,
 }
 
 ItemsTable.defaultProps = {
 	disabled: false,
 	items: [],
 	quantities: null,
-	handleQuantityChange: null,
+	onQuantityChange: null,
 }
 
 const styles = {

@@ -121,8 +121,7 @@ export const actionHandler = {
 			return target[prop];
 		}
 
-		/* eslint-disable no-fallthrough */
-		/* eslint-disable default-case */
+		/* eslint-disable no-fallthrough, default-case */
 		switch (prop) {
 			case 'setOptions':
 				return options => {
@@ -152,8 +151,7 @@ export const actionHandler = {
 					return new Proxy(target, actionHandler);
 				};
 		}
-		/* eslint-enable no-fallthrough */
-		/* eslint-enable default-case */
+		/* eslint-enable no-fallthrough, default-case */
 
 		// On ajoute la catégorie et on gère dynamiquement si c'est un appel propriété/méthode (expliqué sur un article de mon blog)
 		target.addUri(prop);

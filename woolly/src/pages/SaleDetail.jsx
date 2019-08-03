@@ -7,6 +7,7 @@ import axios from 'axios';
 import Loader from '../components/common/Loader';
 import ItemsTable from '../components/sales/ItemsTable';
 import UnpaidOrderDialog from '../components/orders/UnpaidOrderDialog';
+import { Link } from '../components/common/Nav';
 
 import { withStyles } from '@material-ui/core/styles';
 import { Button, Paper, FormControlLabel, Checkbox } from '@material-ui/core';
@@ -35,7 +36,7 @@ class SaleDetail extends React.Component{
 
 	componentDidMount() {
 		const saleId = Number(this.props.match.params.sale_id);
-		if (!this.props.order)
+		if (this.props.authenticated && !this.props.order)
 			this.fetchOrder();
 		if (!this.props.sale)
 			this.props.dispatch(actions.sales.find(saleId, { include: 'association' }));
@@ -96,11 +97,12 @@ class SaleDetail extends React.Component{
 	toggleCGV = event => this.setState(prevState => ({ cgvAccepted: !prevState.cgvAccepted }))
 
 	handleQuantityChange = event => {
-		const { id, value } = event.currentTarget;
+		const id = Number(event.currentTarget.dataset.itemId);
+		const value = Number(event.currentTarget.value);
 		this.setState(prevState => ({
 			quantities: {
 				...prevState.quantities,
-				[id]: Number(value),
+				[id]: value,
 			},
 		}));
 	}
@@ -143,15 +145,6 @@ class SaleDetail extends React.Component{
 		&& this.state.cgvAccepted
 		&& Object.values(this.state.quantities).some(qt => qt > 0)
 	)
-
-	getErrors() {
-		let errors = [];
-		if (!this.props.authenticated)
-			errors.push("Veuillez vous connecter pour acheter.");
-		if (!this.state.cgvAccepted)
-			errors.push("Veuillez accepter les CGV pour acheter");
-		return errors;
-	}
 
 	render() {
 		const { classes, sale } = this.props;
@@ -225,9 +218,16 @@ class SaleDetail extends React.Component{
 					/>
 				</p>
 
-				{this.getErrors().map((error, index) => (
-					<p key={index} className={classes.alert}>{error}</p>
-				))}
+				{!this.props.authenticated && (
+					<p className={classes.alert}>
+						Veuillez <Link to="/login" color="inherit" underline="always">vous connecter</Link> pour acheter.
+					</p>
+				)}
+				{!this.state.cgvAccepted && (
+					<p className={classes.alert}>
+						Veuillez accepter les CGV pour acheter.
+					</p>
+				)}
 
 				<Loader text="Loading items..." loading={!this.props.itemsFetched}>
 					<Paper className={classes.tableRoot}>
@@ -235,7 +235,7 @@ class SaleDetail extends React.Component{
 							disabled={this.areItemsDisabled()}
 							items={this.props.items}
 							quantities={this.state.quantities}
-							handleQuantityChange={this.handleQuantityChange}
+							onQuantityChange={this.handleQuantityChange}
 						/>				
 					</Paper>
 				</Loader>
