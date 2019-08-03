@@ -152,11 +152,7 @@ class SaleDetail extends React.Component{
 		if (!sale || this.props.fetchingSale)
 			return <Loader fluid text="Loading sale..." />
 
-		window.p = this.props // DEBUG
-		window.a = actions // DEBUG
-
 		const buttonProps = { size: 'large', color: 'primary', variant: 'outlined', className: classes.button };
-
 		return (
 			<div className="container">
 				<div className={classes.titleContainer}>
@@ -201,6 +197,7 @@ class SaleDetail extends React.Component{
 						>
 							<Delete className={classes.icon} /> Vider
 						</Button>
+						{/* SAVE BUTTON, utile  ??
 						<Button
 							{...buttonProps}
 							// disabled={!canBuy}
@@ -208,13 +205,18 @@ class SaleDetail extends React.Component{
 						>
 							<Save className={classes.icon} /> Sauvegarder
 						</Button>
+						 */}
 					</div>
 				</div>
 
 				<p>
 					<FormControlLabel
 						control={<Checkbox checked={cgvAccepted} onChange={this.toggleCGV} />}
-						label="J'accepte les conditions générales de ventes (TODO Lien)"
+						label={(
+							<span>
+								J'accepte les <Link href={sale.cgv} rel="noopener" target="_blank">conditions générales de ventes</Link>
+							</span>
+						)}
 					/>
 				</p>
 

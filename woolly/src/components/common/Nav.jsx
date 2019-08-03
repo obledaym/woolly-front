@@ -15,7 +15,7 @@ export const NavLinkRef = React.forwardRef((props, ref) => <RouterNavLink {...pr
 // --------------------------------------------------------------------------
 
 export const Link = React.forwardRef((props, ref) => (
-	<MuiLink component={RouterLink} {...props} />
+	<MuiLink component={'to' in props ? RouterLink : undefined} {...props} />
 ));
 
 export const NavButton = React.forwardRef((props, ref) => (
