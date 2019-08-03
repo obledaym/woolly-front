@@ -17,11 +17,8 @@ import LoginLogout from './pages/LoginLogout';
 
 import Sales from './pages/Sales';
 import SaleDetail from './pages/SaleDetail';
-// import Orders from './pages/Orders';
+import Orders from './pages/Orders';
 import OrderDetail from './pages/OrderDetail';
-
-
-const FakeComponent = props => (<span>FakeComponent</span>) // TODO
 
 // TODO Set in theme
 const HEADER_HEIGHT = 64;
@@ -50,7 +47,7 @@ class App extends React.Component {
 								<Route path="/sales/:sale_id" exact component={SaleDetail} />
 
 								<ProtectedRoute path="/account" exact component={Account} />
-								<ProtectedRoute path="/orders" exact component={FakeComponent} />
+								<ProtectedRoute path="/orders" exact component={Orders} />
 								<ProtectedRoute path="/orders/:order_id" exact component={OrderDetail} />
 
 								<Route path="/login" exact render={props => <LoginLogout {...props} action="login" />} />

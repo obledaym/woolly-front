@@ -50,7 +50,7 @@ class OrdersList extends React.Component{
 
 	action_download = event => {
 		const orderId = event.currentTarget.getAttribute('data-order-id');
-		window.open(`${axios.defaults.baseURL}/orders/${orderId}/pdf`, '_blank');
+		window.open(`${axios.defaults.baseURL}/orders/${orderId}/pdf?download`, '_blank');
 	}
 	action_modify = event => {
 		const orderId = event.currentTarget.getAttribute('data-order-id');
