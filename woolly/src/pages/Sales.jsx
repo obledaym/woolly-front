@@ -25,7 +25,7 @@ class Sales extends React.Component {
 			<div className="container">
 				<h1>Liste des ventes</h1>
 
-				<Loader loading={this.props.fetching} text=" Récupération des ventes en cours...">
+				<Loader fluid loading={this.props.fetching} text=" Récupération des ventes en cours...">
 					<div className={classes.container}>
 						{this.props.sales.map(sale => <SaleCard key={sale.id} sale={sale} /> )}
 					</div>

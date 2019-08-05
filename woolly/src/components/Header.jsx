@@ -55,8 +55,8 @@ class Header extends React.Component {
 									open={Boolean(this.state.authMenuTarget)}
 									onClose={this.closeAuthMenu}
 								>
-									<NavMenuItem to="/orders">Mes commandes</NavMenuItem>
 									<NavMenuItem to="/account">Mon compte</NavMenuItem>
+									<NavMenuItem to="/orders">Mes commandes</NavMenuItem>
 									{auth.user.is_admin && (
 										<NavMenuItem to="/admin">Administration</NavMenuItem>
 									)}

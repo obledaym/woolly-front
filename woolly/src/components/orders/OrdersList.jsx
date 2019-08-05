@@ -7,19 +7,22 @@ import { withStyles } from '@material-ui/core/styles';
 import { SaveAlt, Edit, PlayCircleOutline, Clear } from '@material-ui/icons';
 import { Table, TableBody, TableCell, TableHead, TableRow,
 				 List, ListItem, ListItemText, Button } from '@material-ui/core';
+import OrderlinesList from './OrderlinesList';
+
+const OLL_PROPS = { dense: true, disablePadding: true };
 
 const ORDER_STATUS = {
-	0: { color: '#565656', actions: [ 'cancel', ],           label: 'En cours' },
-	1: { color: '#ff5722', actions: [ 'cancel', ],           label: 'En attente de Validation' },
-	2: { color: '#008805', actions: [ 'tickets', 'modify' ], label: 'Validée' },
-	3: { color: '#ff5722', actions: [ 'cancel', ],           label: 'En attente de Paiement' },
-	4: { color: '#008805', actions: [ 'tickets', 'modify' ], label: 'Payé' },
-	5: { color: '#000000', actions: [],                      label: 'Expirée' },
-	6: { color: '#e00000', actions: [],                      label: 'Annulée' },
+	0: { color: '#565656', actions: [ 'cancel', ],            label: 'En cours' },
+	1: { color: '#ff5722', actions: [ 'cancel', ],            label: 'En attente de Validation' },
+	2: { color: '#008805', actions: [ 'download', 'modify' ], label: 'Validée' },
+	3: { color: '#ff5722', actions: [ 'cancel', ],            label: 'En attente de Paiement' },
+	4: { color: '#008805', actions: [ 'download', 'modify' ], label: 'Payé' },
+	5: { color: '#000000', actions: [],                       label: 'Expirée' },
+	6: { color: '#e00000', actions: [],                       label: 'Annulée' },
 }
 
 const ACTIONS = {
-	tickets:  { text: "Télécharger les billets", Icon: SaveAlt,           },
+	download: { text: "Télécharger les billets", Icon: SaveAlt,           },
 	modify:   { text: "Modifier la commande",    Icon: Edit,              },
 	continue: { text: "Continuer la commande",   Icon: PlayCircleOutline, },
 	cancel:   { text: "Annuler la commande",     Icon: Clear,             },
@@ -47,7 +50,7 @@ class OrdersList extends React.Component{
 
 	action_download = event => {
 		const orderId = event.currentTarget.getAttribute('data-order-id');
-		window.open(`${axios.defaults.baseURL}/orders/${orderId}/pdf`, '_blank');
+		window.open(`${axios.defaults.baseURL}/orders/${orderId}/pdf?download`, '_blank');
 	}
 	action_modify = event => {
 		const orderId = event.currentTarget.getAttribute('data-order-id');
@@ -59,7 +62,8 @@ class OrdersList extends React.Component{
 	}
 	action_cancel = event => {
 		const orderId = event.currentTarget.getAttribute('data-order-id');
-		axios.delete(`/orders/${orderId}`, { withCredentials: true });
+		axios.delete(`/orders/${orderId}`, { withCredentials: true })
+						.then(this.props.updateOrders)
 	}
 
 	getOrderRow = order => {
@@ -74,7 +78,7 @@ class OrdersList extends React.Component{
 				<Cell>{order.sale.name}</Cell>
 				<Cell align="center">{statusCell}</Cell>
 				<Cell align="center">{actionsCell}</Cell>
-				<Cell>{this.getOrderlinesList(order.orderlines)}</Cell>
+				<Cell><OrderlinesList orderlines={order.orderlines} listProps={OLL_PROPS} /></Cell>
 			</TableRow>
 		);
 	}
@@ -114,7 +118,8 @@ class OrdersList extends React.Component{
 }
 
 OrdersList.propTypes = {
-	classes: PropTypes.object.isRequired
+	classes: PropTypes.object.isRequired,
+	orders: PropTypes.arrayOf(PropTypes.object).isRequired,
 }
 
 const styles = theme => ({
