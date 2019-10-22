@@ -5,6 +5,7 @@ import axios from 'axios';
 
 import { withStyles } from '@material-ui/core/styles';
 import { Button, Paper, TextField } from '@material-ui/core';
+import { ORDER_STATUS } from '../utils';
 import Loader from '../components/common/Loader';
 
 const connector = connect((store, props) => ({
@@ -24,6 +25,7 @@ class OrderDetail extends React.Component {
 
 	componentDidMount() {
 		this.fetchOrder();
+		this.updateStatus();
 	}
 
 	componentDidUpdate(prevProps) {
@@ -37,6 +39,19 @@ class OrderDetail extends React.Component {
 															+ 'orderlines__item,orderlines__orderlineitems,'
 															+ 'orderlines__orderlineitems__orderlinefields')
 													.definePath(['auth', 'currentOrder']).get())
+	}
+
+	updateStatus = async () => {
+		const orderId = this.props.match.params.order_id;
+		const resp = (await axios.get(`/orders/${orderId}/pay_callback`)).data
+		// Redirect to payment if needed
+		if (resp.redirect_url && resp.status === 'AWAITING_PAYMENT') {
+			window.location.href = resp.redirect_url
+		// Refetch order if updated
+		} else if (resp.updated) {
+			console.log('updated')
+			setTimeout(this.fetchOrder, 500);
+		}
 	}
 
 	getStateFromOrder() {
@@ -103,9 +118,11 @@ class OrderDetail extends React.Component {
 	render() {
 		const { classes, order } = this.props;
 		const { orderlineitems, saving, changing } = this.state;
+		const status = ORDER_STATUS[order.status] || {};
 		return (
 			<div className="container">
 				<h1>Informations de la commande n°{order.id}</h1>
+				<span style={{ color: status.color }}>{status.label}</span>
 				<p>Vous pouvez modifier les billets qui sont éditables en cliquant sur les différents champs.</p>
 				<div className={classes.ticketContainer}>
 					{Object.values(orderlineitems).map(orderlineitem =>  (
