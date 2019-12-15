@@ -1,6 +1,8 @@
 import React from 'react';
 import { SaveAlt, Edit, PlayCircleOutline, Clear } from '@material-ui/icons';
 
+export const isList = object => object && object.length;
+
 export function shorten(text, limit) {
 	if (text.length > limit)
 		return text.slice(0,limit-3) + '...';
