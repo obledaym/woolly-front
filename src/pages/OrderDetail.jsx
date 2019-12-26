@@ -28,10 +28,16 @@ class OrderDetail extends React.Component {
 	}
 
 	componentDidUpdate(prevProps) {
-		// New order: update state and order status
+		// New order: update order status or tickets state
 		if (this.props.order.id && this.props.order !== prevProps.order) {
-			this.setState(this.getStateFromOrder());
-			if (!(this.props.order.status in [2, 4]))
+			if ([2, 4].includes(this.props.order.status)) {
+				this.setState(this.getStateFromOrder(), () => {
+					// Wait a bit for tickets to be generated if not there
+					if (Object.values(this.state.orderlineitems).length === 0)
+						setTimeout(this.fetchOrder, 1000);
+				});
+			}
+			else
 				this.updateStatus();
 		}
 	}
@@ -47,16 +53,15 @@ class OrderDetail extends React.Component {
 	updateStatus = async () => {
 		const orderId = this.props.match.params.order_id;
 		const resp = (await axios.get(`/orders/${orderId}/status`)).data
-		// Redirect to payment if needed
+		// Redirect to payment if needed or refresh order
 		if (resp.redirect_url )
 			window.location.href = resp.redirect_url
-		// Refetch order if updated
-		else if (resp.updated)
+		else
 			this.fetchOrder();
 	}
 
 	getStateFromOrder() {
-		const orderlineitems = {};
+		let orderlineitems = {};
 		this.props.order.orderlines.forEach(orderline => {
 			orderline.orderlineitems.forEach(({ orderlinefields, ...orderlineitem }) => {
 				// Add orderlineitem to the map
@@ -128,9 +133,10 @@ class OrderDetail extends React.Component {
 					style={{ backgroundColor: status.color, color: '#fff' }}
 					label={status.label}
 				/>
+				{/* Change message // status */}
 				<p>Vous pouvez modifier les billets qui sont éditables en cliquant sur les différents champs.</p>
 				<div className={classes.ticketContainer}>
-					{Object.values(orderlineitems).map(orderlineitem =>  (
+					{Object.values(orderlineitems).map(orderlineitem => (
 						<Paper key={orderlineitem.id} className={classes.ticket}>
 							<h4 className={classes.ticketTitle}>{orderlineitem.item.name}</h4>
 							{isList(orderlineitem.orderlinefields) ? (
