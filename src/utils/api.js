@@ -1,7 +1,8 @@
 import axios from "axios";
 import apiActions from "redux/actions/api";
-import { API_URL } from "utils/constants";
+import { API_URL, SALE_STATUS } from "utils/constants";
 import { isEmpty } from "utils/helpers";
+import { isPast } from "date-fns";
 
 /**
  * Default axios for the API
@@ -17,6 +18,19 @@ export const apiAxios = axios.create({
  */
 export function hasManagerRights(auth, userAssos) {
 	return auth.authenticated && (auth.user.is_admin || !isEmpty(userAssos));
+}
+
+/**
+ * Get the state of a sale
+ */
+export function getSaleState(sale) {
+    if (!sale)
+        return null;
+    if (sale.end_at && isPast(new Date(sale.end_at)))
+        return SALE_STATUS.FINISHED;
+    if (sale.begin_at && isPast(new Date(sale.begin_at)))
+        return SALE_STATUS.ONGOING;
+    return SALE_STATUS.NOT_BEGUN;
 }
 
 /**
@@ -68,4 +82,3 @@ export function getStatusActions(dispatch, history) {
 		},
 	};
 };
-

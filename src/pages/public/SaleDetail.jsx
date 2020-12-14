@@ -6,8 +6,9 @@ import apiActions from 'redux/actions/api';
 import messagesActions from 'redux/actions/messages';
 import { apiAxios } from 'utils/api';
 
-import { isPast } from 'date-fns';
+import { differenceInSeconds } from 'date-fns'
 import { formatDate } from 'utils/format';
+import { getSaleState } from 'utils/api';
 import { getButtonColoredVariant } from 'utils/styles';
 
 import Loader from 'components/common/Loader';
@@ -15,11 +16,16 @@ import ItemsTable from 'components/sales/ItemsTable';
 import UnpaidOrderDialog from 'components/orders/UnpaidOrderDialog';
 import { Link } from 'components/common/Nav';
 
-import { withStyles } from '@material-ui/core/styles';
-import { Container, Box, Grid, Button, Paper, FormControlLabel, Checkbox, Collapse } from '@material-ui/core';
-import { ShoppingCart, Delete } from '@material-ui/icons';
-import { Alert, AlertTitle } from '@material-ui/lab';
+import {withStyles} from '@material-ui/core/styles';
+import {
+	Container, Box, Grid, Button, Paper, FormControlLabel, Checkbox,
+	Collapse, LinearProgress,
+} from '@material-ui/core';
+import {ShoppingCart, Delete} from '@material-ui/icons';
+import {Alert, AlertTitle} from '@material-ui/lab';
 
+
+const COUNTDOWN_MAX = 12 * 3600; // Countdown 12h before
 
 const connector = connect((store, props) => {
 	const saleId = props.match.params.sale_id;
@@ -38,6 +44,10 @@ class SaleDetail extends React.Component{
 		quantities: {},
 		buying: false,
 		cgvAccepted: false,
+		countdown: undefined,
+		// progress: 0,
+		// timeLeft: "Chargement...",
+		saleState: null,
 	}
 
 	componentDidMount() {
@@ -50,12 +60,17 @@ class SaleDetail extends React.Component{
 
 		if (!this.props.items)
 			this.props.dispatch(apiActions.sales(saleId).items.all());
+
+		if (this.props.sale)
+			this.updateSaleState();
 	}
 
 	componentDidUpdate(prevProps) {
-		const order = this.props.order;
+		if (prevProps.sale !== this.props.sale)
+			this.updateSaleState();
 
 		// Update quantities from current order
+		const order = this.props.order;
 		if (prevProps.order !== order && order?.orderlines?.length) {
 			this.setState({
 				quantities: order.orderlines.reduce((acc, orderline) => {
@@ -63,6 +78,32 @@ class SaleDetail extends React.Component{
 					return acc;
 				}, {})
 			});
+		}
+	}
+
+	componentWillUnmount() {
+		if (this.interval)
+			clearInterval(this.interval);
+	}
+
+	updateSaleState = () => {
+		if (this.interval)
+			clearInterval(this.interval);
+
+		const saleState = getSaleState(this.props.sale);
+		this.setState({ saleState, countdown: undefined });
+
+		// Start countdown if not begun and less than 24 hours to go
+		const start = new Date(this.props.sale.begin_at);
+		if (saleState?.key === 'NOT_BEGUN' && differenceInSeconds(start, new Date()) < COUNTDOWN_MAX) {
+			this.interval = setInterval(() => {
+				const secondsLeft = differenceInSeconds(start, new Date());
+				const countdown = (COUNTDOWN_MAX - secondsLeft) / COUNTDOWN_MAX * 100;
+				if (secondsLeft <= 0)
+					this.updateSaleState();
+				else
+					this.setState(prevState => ({ ...prevState, countdown }));
+			}, 1000);
 		}
 	}
 
@@ -173,17 +214,6 @@ class SaleDetail extends React.Component{
 	// 		Display
 	// -----------------------------------------------------
 
-	currentSaleState = () => {
-		const sale = this.props.sale;
-		if (!sale)
-			return null;
-		if (sale.end_at && isPast(new Date(sale.end_at)))
-			return 'FINISHED';
-		if (sale.begin_at && isPast(new Date(sale.begin_at)))
-			return 'ONGOING';
-		return 'NOT_BEGUN';
-	}
-
 	hasUnpaidOrder = () => Boolean(this.props.order && this.props.order.status === 3)
 
 	areItemsDisabled = () => Boolean(!this.props.authenticated || this.hasUnpaidOrder())
@@ -193,17 +223,16 @@ class SaleDetail extends React.Component{
 	canBuy = () => (
 		this.props.authenticated
 		&& this.state.cgvAccepted
-		&& this.currentSaleState() === 'ONGOING'
+		&& this.state.saleState?.key === 'ONGOING'
 		&& this.hasItemsInCart()
 	)
 
 	render() {
 		const { classes, sale } = this.props;
-		const { cgvAccepted } = this.state;
+		const { cgvAccepted, saleState } = this.state;
 		if (!sale || this.props.fetchingSale)
 			return <Loader fluid text="Loading sale..." />
 
-		const saleState = this.currentSaleState()
 		const CGVLink = props => <Link href={sale.cgv} rel="noopener" target="_blank" {...props} />
 		return (
 			<React.Fragment>
@@ -235,15 +264,21 @@ class SaleDetail extends React.Component{
 						<Grid item xs={12} sm={8}>
 							<h3>Articles en ventes</h3>
 
-							{saleState === 'NOT_BEGUN' && (
+							{saleState?.key === 'NOT_BEGUN' && (
 								<Alert severity="warning" color="info">
 									<AlertTitle>La vente n'a pas encore commencée</AlertTitle>
 									<span>
-										Revenez d'ici {sale.begin_at && formatDate(sale.begin_at, 'fromNowStrict')} pour pouvoir commander.
+										Encore un peu de patience&nbsp;!
+										Revenez d'ici <b>{sale.begin_at && formatDate(sale.begin_at, 'fromNowStrict')}</b> pour pouvoir commander.
 									</span>
+									{this.state.countdown && (
+										<Box mt={1}>
+											<LinearProgress variant="determinate" value={this.state.countdown} />
+										</Box>
+									)}
 								</Alert>
 							)}
-							{saleState === 'FINISHED' && (
+							{saleState?.key === 'FINISHED' && (
 								<Alert severity="warning" color="info">
 									<AlertTitle>La vente est terminée</AlertTitle>
 									<span>
@@ -251,7 +286,7 @@ class SaleDetail extends React.Component{
 									</span>
 								</Alert>
 							)}
-							{saleState === 'ONGOING' && (
+							{saleState?.key === 'ONGOING' && (
 								<React.Fragment>
 									<FormControlLabel
 										control={(
@@ -301,35 +336,35 @@ class SaleDetail extends React.Component{
 								<Button
 									onClick={this.handleReset}
 									disabled={!this.hasItemsInCart()}
-									startIcon={<Delete />}
+									startIcon={<Delete/>}
 									className={classes.buttonEmpty}
 									variant="outlined"
 								>
 									Vider
 								</Button>
 								{/* SAVE BUTTON, utile  ??
-								<Button
-									onClick={this.saveOrder}
-									// disabled={!canBuy}
-									// startIcon={<Save />}
-									className={classes.button}
-									variant="outlined"
-								>
-									Sauvegarder
-								</Button>
-								 */}
+									<Button
+										onClick={this.saveOrder}
+										// disabled={!canBuy}
+										// startIcon={<Save />}
+										className={classes.button}
+										variant="outlined"
+									>
+										Sauvegarder
+									</Button>
+								*/}
 								<Button
 									onClick={this.handleBuy}
 									disabled={!this.canBuy()}
-									startIcon={<ShoppingCart />}
+									startIcon={<ShoppingCart/>}
 									className={classes.buttonBuy}
 									variant="contained"
 								>
 									Acheter
 								</Button>
 							</Box>
-						</Grid>
 
+						</Grid>
 					</Grid>
 
 					<UnpaidOrderDialog
